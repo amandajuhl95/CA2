@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         
         <!-- TODO: Add the URL to your own tomcat server. Used to deploy your WAR-file -->
-        <remote.server>http://salandt.dk/manager/text</remote.server>
+        <remote.server>http://ajuhlhansen.dk/manager/text</remote.server>
         
     </properties>
     
