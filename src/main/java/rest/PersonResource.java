@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -81,6 +83,55 @@ public class PersonResource {
         p.addPhone("+45 67854231");
 
         return p;
+    }
+    
+    @GET
+    @Path("/phone/{phone}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Get Person info by phonenumber",
+            tags = {"Person"},
+            responses = {
+                @ApiResponse(
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "The Requested Person"),
+                @ApiResponse(responseCode = "400", description = "Person not found")})
+
+    public PersonDTO getPersonByPhone(@PathParam("phone") String phone) {
+        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me");
+        p.addHobby("Programming");
+        p.addHobby("Dicatorship");
+        p.addHobby("Antifa");
+        p.addPhone(phone);
+
+        return p;
+    }
+    
+    @GET
+    @Path("/persons/{hobby}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Get all persons info by hobby",
+            tags = {"Person"},
+            responses = {
+                @ApiResponse(
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "The Requested List of persons"),
+                @ApiResponse(responseCode = "400", description = "List of Persons not found")})
+
+    public List<PersonDTO> getPersonsByHobby(@PathParam("hobby") String hobby) {
+        List<PersonDTO> persons = new ArrayList();
+        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me");
+        PersonDTO p2 = new PersonDTO("Ralle", "Clinton", "ralle-4-ever@hotmail.com", "Fasanvej 2");
+        
+        p.addHobby(hobby);
+        p.addHobby("Dicatorship");
+        p.addPhone("32143214");
+        p2.addHobby(hobby);
+        p2.addPhone("67676767");
+        
+        persons.add(p);
+        persons.add(p2);
+        
+        return persons;
     }
     
     @POST
