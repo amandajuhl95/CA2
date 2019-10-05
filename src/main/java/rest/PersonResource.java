@@ -154,3 +154,9 @@ public class PersonResource {
 
 
 }
+
+//Get all persons living in a given city (i.e. 2800 Lyngby)
+//Get the count of people with a given hobby
+//Get a list of all zip codes in Denmark
+//...
+//In order to set up data, the API must also provide methods to add, delete and edit the entities in the underlying database
