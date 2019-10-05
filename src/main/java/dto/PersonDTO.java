@@ -24,16 +24,19 @@ public class PersonDTO {
     private String email;
     @Schema(required = true, example = "Svanevej 3")
     private String address;
+     @Schema(required = true, example = "2200 copenhagen n")
+    private String city;
     @Schema(example = "[\"65321345\",\"78987654\"]")
     private Set<String> phones = new HashSet();
     @Schema(example = "[\"Programming\",\"Beer\"]")
     private Set<String> hobbies = new HashSet();
 
-    public PersonDTO(String firstname, String lastname, String email, String address) {
+    public PersonDTO(String firstname, String lastname, String email, String address, String city) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
         this.address = address;
+        this.city = city;
     }
 
     public PersonDTO() {
@@ -78,6 +81,16 @@ public class PersonDTO {
     public void setAddress(String address) {
         this.address = address;
     }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+    
+    
 
     public Set<String> getPhones() {
         return phones;

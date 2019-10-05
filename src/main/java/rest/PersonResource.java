@@ -163,7 +163,51 @@ public class PersonResource {
         
         return persons;
     }
+    //count of persons with given hoppy
+      @GET
+    @Path("/hoppy/count/{hoppy}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "number of persons with a given hoppy",
+            tags = {"Person"},
+            responses = {
+                @ApiResponse(
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "the number of people with that hoppy"),
+                @ApiResponse(responseCode = "400", description = "List of Persons not found")})
+
+    public int getNumberOfPersonsWithHoppy(@PathParam("hoppy") String hoppy) {
+        List<PersonDTO> persons = new ArrayList();
+        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me", "2920 charlottenlund");
+        PersonDTO p2 = new PersonDTO("Ralle", "Clinton", "ralle-4-ever@hotmail.com", "Fasanvej 2", "2920 charlottenlund");
+        
+        
+        p.addHobby("Dicatorship");
+        p.addPhone("32143214");
+        p2.addHobby("jumping");
+        p2.addPhone("67676797");
+        
+        
+        persons.add(p);
+        persons.add(p2);
+        
+        return persons.size();
+    }
     
+       @GET
+    @Path("/allzip")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "a list of all zipcodes in Denmark",
+            tags = {"Person"},
+            responses = {
+                @ApiResponse(
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "all zipcodes in denmark"),
+                @ApiResponse(responseCode = "400", description = "List of zipcodes not found")})
+
+    public int[] AllZipCodesInDenmark() {
+        int[] zipcodes = {2222,4444,5555,2200};
+        return zipcodes;
+    }
     
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -186,8 +230,8 @@ public class PersonResource {
 
 }
 
-//Get all persons living in a given city (i.e. 2800 Lyngby)
-//Get the count of people with a given hobby
+
+
 //Get a list of all zip codes in Denmark
 //...
 //In order to set up data, the API must also provide methods to add, delete and edit the entities in the underlying database

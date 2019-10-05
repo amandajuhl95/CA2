@@ -159,6 +159,13 @@
                 <version>2.21.0</version>
                 <dependencies>
                     <dependency>
+        <groupId>unibas</groupId>
+        <artifactId>utilita</artifactId>
+        <version>0.1</version>
+        <scope>system</scope>
+        <systemPath>/home/vincenzo/MEGA/Programmazione/myLib/java/utilita.jar</systemPath>
+    </dependency>
+                    <dependency>
                         <groupId>org.junit.platform</groupId>
                         <artifactId>junit-platform-surefire-provider</artifactId>
                         <version>1.2.0</version>
