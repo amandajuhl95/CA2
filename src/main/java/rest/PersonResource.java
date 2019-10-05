@@ -75,7 +75,7 @@ public class PersonResource {
                 @ApiResponse(responseCode = "400", description = "Person not found")})
 
     public PersonDTO getPerson(@PathParam("id") long id) {
-        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me");
+        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me", "2920 charlottenlund");
         p.addHobby("Programming");
         p.addHobby("Dicatorship");
         p.addHobby("Antifa");
@@ -97,7 +97,7 @@ public class PersonResource {
                 @ApiResponse(responseCode = "400", description = "Person not found")})
 
     public PersonDTO getPersonByPhone(@PathParam("phone") String phone) {
-        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me");
+        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me", "2920 charlottenlund");
         p.addHobby("Programming");
         p.addHobby("Dicatorship");
         p.addHobby("Antifa");
@@ -119,8 +119,8 @@ public class PersonResource {
 
     public List<PersonDTO> getPersonsByHobby(@PathParam("hobby") String hobby) {
         List<PersonDTO> persons = new ArrayList();
-        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me");
-        PersonDTO p2 = new PersonDTO("Ralle", "Clinton", "ralle-4-ever@hotmail.com", "Fasanvej 2");
+        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me", "2920 charlottenlund");
+        PersonDTO p2 = new PersonDTO("Ralle", "Clinton", "ralle-4-ever@hotmail.com", "Fasanvej 2", "2920 charlottenlund");
         
         p.addHobby(hobby);
         p.addHobby("Dicatorship");
@@ -133,6 +133,37 @@ public class PersonResource {
         
         return persons;
     }
+    
+    //get all persons from a specific city
+    @GET
+    @Path("/city/{city}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Get all persons info by city",
+            tags = {"Person"},
+            responses = {
+                @ApiResponse(
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "The Requested List of persons"),
+                @ApiResponse(responseCode = "400", description = "List of Persons not found")})
+
+    public List<PersonDTO> getPersonsByCity(@PathParam("city") String city) {
+        List<PersonDTO> persons = new ArrayList();
+        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me", "2920 charlottenlund");
+        PersonDTO p2 = new PersonDTO("Ralle", "Clinton", "ralle-4-ever@hotmail.com", "Fasanvej 2", "2920 charlottenlund");
+        
+        p.setCity(city);
+        p.addHobby("Dicatorship");
+        p.addPhone("32143214");
+        p2.addHobby("jumping");
+        p2.addPhone("67676767");
+        p2.setCity(city);
+        
+        persons.add(p);
+        persons.add(p2);
+        
+        return persons;
+    }
+    
     
     @POST
     @Produces(MediaType.APPLICATION_JSON)
