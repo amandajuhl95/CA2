@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -119,6 +120,11 @@ public class PersonResource {
 
     public List<PersonDTO> getPersonsByHobby(@PathParam("hobby") String hobby) {
         List<PersonDTO> persons = new ArrayList();
+        
+         if (hobby== null  || hobby == ""){
+            throw new WebApplicationException("id not passed correctly",400);
+        }
+         
         PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me", "2920 charlottenlund");
         PersonDTO p2 = new PersonDTO("Ralle", "Clinton", "ralle-4-ever@hotmail.com", "Fasanvej 2", "2920 charlottenlund");
         
@@ -147,6 +153,11 @@ public class PersonResource {
                 @ApiResponse(responseCode = "400", description = "List of Persons not found")})
 
     public List<PersonDTO> getPersonsByCity(@PathParam("city") String city) {
+        
+         if (city== null  || city == ""){
+            throw new WebApplicationException("id not passed correctly",400);
+        }
+         
         List<PersonDTO> persons = new ArrayList();
         PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me", "2920 charlottenlund");
         PersonDTO p2 = new PersonDTO("Ralle", "Clinton", "ralle-4-ever@hotmail.com", "Fasanvej 2", "2920 charlottenlund");
@@ -176,6 +187,11 @@ public class PersonResource {
                 @ApiResponse(responseCode = "400", description = "List of Persons not found")})
 
     public int getNumberOfPersonsWithHoppy(@PathParam("hoppy") String hoppy) {
+        
+         if (hoppy== null  || hoppy == ""){
+            throw new WebApplicationException("id not passed correctly",400);
+        }
+        
         List<PersonDTO> persons = new ArrayList();
         PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me", "2920 charlottenlund");
         PersonDTO p2 = new PersonDTO("Ralle", "Clinton", "ralle-4-ever@hotmail.com", "Fasanvej 2", "2920 charlottenlund");
@@ -209,6 +225,52 @@ public class PersonResource {
         return zipcodes;
     }
     
+    @DELETE
+    @Path("/delete/{id}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Delete a person with a given id",
+            tags = {"Person"},
+            responses = {
+                @ApiResponse(
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "person was deleted"),
+                @ApiResponse(responseCode = "400", description = "wrong id passed")})
+
+    public PersonDTO DeleteUser(@PathParam("id") String id) {
+     
+          if (id== null  || "".equals(id)){
+            throw new WebApplicationException("id not passed correctly",400);
+        }
+        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me", "2920 charlottenlund");
+
+        p.addHobby("Dicatorship");
+        p.addPhone("32143214");
+        
+        return p;
+    }
+    
+       @PUT
+    @Path("/edit/{id}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "edit a person with a given id",
+            tags = {"Person"},
+            responses = {
+                @ApiResponse(
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "person was edited"),
+                @ApiResponse(responseCode = "400", description = "person was NOT editet")})
+
+    public PersonDTO EditUser(PersonDTO person) {
+      if(person.getFirstname() == null || person.getLastname()== null || person.getEmail() == null || person.getAddress()== null){
+            throw new WebApplicationException("Not all required arguments included",400);
+        }
+        
+        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me", "2920 charlottenlund");
+
+        return p;
+    }
+    
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -232,6 +294,5 @@ public class PersonResource {
 
 
 
-//Get a list of all zip codes in Denmark
-//...
-//In order to set up data, the API must also provide methods to add, delete and edit the entities in the underlying database
+
+//edit the entities in the underlying database
