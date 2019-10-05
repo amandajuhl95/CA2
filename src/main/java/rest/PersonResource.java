@@ -155,7 +155,7 @@ public class PersonResource {
         p.addHobby("Dicatorship");
         p.addPhone("32143214");
         p2.addHobby("jumping");
-        p2.addPhone("67676767");
+        p2.addPhone("67676797");
         p2.setCity(city);
         
         persons.add(p);
