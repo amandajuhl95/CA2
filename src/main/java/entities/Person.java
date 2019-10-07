@@ -1,11 +1,16 @@
 package entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 
 @Entity
@@ -19,14 +24,29 @@ public class Person implements Serializable {
     private String email;
     private String firstName;
     private String lastName;
+    @ManyToOne
+    private Address address;
+    @ManyToMany
+    private List<Hobby> hobbies = new ArrayList();
+    @OneToMany(mappedBy = "person")
+    private List<Phone> phones = new ArrayList();
     
     public Person() {
     }
 
-    public Person(String email, String firstName, String lastName) {
+    public Person(String email, String firstName, String lastName, Address address) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.address = address;
+    }
+    
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getEmail() {
@@ -52,19 +72,25 @@ public class Person implements Serializable {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-    
-    
-        
-    public Long getId() {
-        return id;
+
+    public Address getAddress() {
+        return address;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setAddress(Address address) {
+        this.address = address;
     }
     
-
+    public void addHobby(Hobby hobby)
+    {
+        this.hobbies.add(hobby);
+        hobby.addPerson(this);
+    }
     
-
+    public void addPhone(Phone phone)
+    {
+        this.phones.add(phone);
+        phone.setPerson(this);
+    }
    
 }

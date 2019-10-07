@@ -1,12 +1,14 @@
 package entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQuery;
-
 
 @Entity
 @NamedQuery(name = "Person.deleteAllRows", query = "DELETE from Person")
@@ -18,13 +20,23 @@ public class Hobby implements Serializable {
     private Long id;
     private String name;
     private String description;
-    
+    @ManyToMany(mappedBy = "hobbies")
+    private List<Person> persons = new ArrayList();
+
     public Hobby() {
     }
 
     public Hobby(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -43,20 +55,7 @@ public class Hobby implements Serializable {
         this.description = description;
     }
 
-
-
-    
-        
-    public Long getId() {
-        return id;
+    public void addPerson(Person person) {
+        this.persons.add(person);
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-
-    
-
-   
 }
