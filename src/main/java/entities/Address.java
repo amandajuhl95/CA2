@@ -81,4 +81,9 @@ public class Address implements Serializable {
         this.persons.add(person);
     }
     
+    public void removePerson(Person person)
+    {
+        this.persons.remove(person);
+    }
+    
 }

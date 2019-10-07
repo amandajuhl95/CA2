@@ -58,4 +58,9 @@ public class Hobby implements Serializable {
     public void addPerson(Person person) {
         this.persons.add(person);
     }
+    
+    public void removePerson(Person person)
+    {
+        this.persons.remove(person);
+    }
 }

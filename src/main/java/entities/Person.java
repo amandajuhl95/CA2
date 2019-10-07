@@ -95,10 +95,21 @@ public class Person implements Serializable {
         hobby.addPerson(this);
     }
     
+    public void removeHobby(Hobby hobby)
+    {
+        this.hobbies.remove(hobby);
+        hobby.removePerson(this);
+    }
+    
     public void addPhone(Phone phone)
     {
         this.phones.add(phone);
         phone.setPerson(this);
+    }
+    
+     public void removePhone(Phone phone)
+    {
+        this.phones.remove(phone);
     }
    
 }
