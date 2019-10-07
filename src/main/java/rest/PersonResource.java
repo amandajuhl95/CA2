@@ -174,21 +174,21 @@ public class PersonResource {
         
         return persons;
     }
-    //count of persons with given hoppy
+    //count of persons with given hobby
       @GET
-    @Path("/hoppy/count/{hoppy}")
+    @Path("/hobby/count/{hobby}")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "number of persons with a given hoppy",
+    @Operation(summary = "number of persons with a given hobby",
             tags = {"Person"},
             responses = {
                 @ApiResponse(
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-                @ApiResponse(responseCode = "200", description = "the number of people with that hoppy"),
+                @ApiResponse(responseCode = "200", description = "the number of people with that hobby"),
                 @ApiResponse(responseCode = "400", description = "List of Persons not found")})
 
-    public int getNumberOfPersonsWithHoppy(@PathParam("hoppy") String hoppy) {
+    public int getNumberOfPersonsWithHobby(@PathParam("hobby") String hobby) {
         
-         if (hoppy== null  || hoppy == ""){
+         if (hobby== null  || hobby == ""){
             throw new WebApplicationException("id not passed correctly",400);
         }
         
