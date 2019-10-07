@@ -84,6 +84,27 @@ public class PersonResourceTest {
          Phone phone = new Phone(22112211, "workPhone");
          Hobby hoppy = new Hobby("programming", "the future of mankind is programming, also good for making a blog about your dog pictures");
          Person p1 = new Person("jim@gmail.com", "jim", "theMan", address);
+         p1.addHobby(hoppy);
+         p1.addPhone(phone);
+         address.addPerson(p1);
+         hoppy.addPerson(p1);
+         phone.setPerson(p1);
+         
+         
+         Address address2 = new Address("gadevejen", "1 th", cityInfo);
+         cityInfo.addAddress(address2);
+         Phone phone2 = new Phone(99889988, "privatePhone");
+         Hobby hoppy2 = new Hobby("jumping", "super fun and easy");
+         Person p2 = new Person("bill@gmail.com", "bill", "LastName", address2);
+         p2.addHobby(hoppy2);
+         p2.addHobby(hoppy);
+         p2.addPhone(phone2);
+         address2.addPerson(p2);
+         hoppy.addPerson(p2);
+         hoppy2.addPerson(p2);
+         phone2.setPerson(p2);
+         
+         
 
         try {
             em.getTransaction().begin();
