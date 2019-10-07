@@ -5,9 +5,12 @@
  */
 package dto;
 
+import entities.Hobby;
+import entities.Person;
+import entities.Phone;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -24,19 +27,29 @@ public class PersonDTO {
     private String email;
     @Schema(required = true, example = "Svanevej 3")
     private String address;
-     @Schema(required = true, example = "2200 copenhagen n")
-    private String city;
-    @Schema(example = "[\"65321345\",\"78987654\"]")
-    private Set<String> phones = new HashSet();
+     @Schema(required = true, example = "2200 Copenhagen N")
+    private String city;   
+     @Schema(example = "[\"65321345\",\"78987654\"]")
+    private Map<Integer,String> phones = new HashMap();
     @Schema(example = "[\"Programming\",\"Beer\"]")
-    private Set<String> hobbies = new HashSet();
+    private Map<String,String> hobbies = new HashMap();
 
-    public PersonDTO(String firstname, String lastname, String email, String address, String city) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-        this.address = address;
-        this.city = city;
+    public PersonDTO(Person person) {
+        this.firstname = person.getFirstName();
+        this.lastname = person.getLastName();
+        this.email = person.getEmail();
+        this.address = person.getAddress().getStreet() + " " + person.getAddress().getAddinfo();
+        this.city = person.getAddress().getCityInfo().getZip() + " " + person.getAddress().getCityInfo().getCity();
+        
+        for (Hobby hobby : person.getHobbies()) {
+           
+            this.hobbies.put(hobby.getName(), hobby.getDescription());
+        }
+        
+         for (Phone phone : person.getPhones()) {
+           
+            this.phones.put(phone.getNumber(), phone.getDescription());
+        }
     }
 
     public PersonDTO() {
@@ -46,66 +59,32 @@ public class PersonDTO {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public String getFirstname() {
         return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
     }
 
     public String getLastname() {
         return lastname;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
     public String getEmail() {
         return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public String getCity() {
         return city;
     }
 
-    public void setCity(String city) {
-        this.city = city;
-    }
-    
-    
-
-    public Set<String> getPhones() {
+    public Map<Integer, String> getPhones() {
         return phones;
     }
 
-    public void addPhone(String phone) {
-        this.phones.add(phone);
-    }
-
-    public Set<String> getHobbies() {
+    public Map<String, String> getHobbies() {
         return hobbies;
-    }
-
-    public void addHobby(String hobby) {
-        this.hobbies.add(hobby);
     }
 
 }

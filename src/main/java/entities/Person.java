@@ -80,6 +80,14 @@ public class Person implements Serializable {
     public void setAddress(Address address) {
         this.address = address;
     }
+
+    public List<Hobby> getHobbies() {
+        return hobbies;
+    }
+
+    public List<Phone> getPhones() {
+        return phones;
+    }
     
     public void addHobby(Hobby hobby)
     {
