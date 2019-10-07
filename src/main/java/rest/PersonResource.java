@@ -2,7 +2,7 @@ package rest;
 
 import dto.PersonDTO;
 import utils.EMF_Creator;
-import facades.FacadeExample;
+import facades.PersonFacade;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.info.Contact;
@@ -55,7 +55,7 @@ import javax.ws.rs.core.MediaType;
 public class PersonResource {
 
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory(EMF_Creator.DbSelector.DEV, EMF_Creator.Strategy.CREATE);
-    private static final FacadeExample FACADE = FacadeExample.getFacadeExample(EMF);
+    private static final PersonFacade FACADE = PersonFacade.getFacadeExample(EMF);
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})

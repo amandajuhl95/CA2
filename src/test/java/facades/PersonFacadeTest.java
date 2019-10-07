@@ -17,18 +17,18 @@ import utils.EMF_Creator.Strategy;
 
 //Uncomment the line below, to temporarily disable this test
 @Disabled
-public class FacadeExampleTest {
+public class PersonFacadeTest {
 
     private static EntityManagerFactory emf;
-    private static FacadeExample facade;
+    private static PersonFacade facade;
 
-    public FacadeExampleTest() {
+    public PersonFacadeTest() {
     }
 
     @BeforeAll
     public static void setUpClass() {
         emf = EMF_Creator.createEntityManagerFactory(DbSelector.TEST, Strategy.DROP_AND_CREATE);
-        facade = FacadeExample.getFacadeExample(emf);
+        facade = PersonFacade.getFacadeExample(emf);
     }
 
     @AfterAll
