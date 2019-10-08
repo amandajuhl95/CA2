@@ -32,6 +32,7 @@ public class PersonFacadeTest {
     
      private Person p1;
     private Person p2;
+    private CityInfo cityInfo;
 
     public PersonFacadeTest() {
     }
@@ -64,7 +65,7 @@ public class PersonFacadeTest {
   public void setUp() {
         
          EntityManager em = emf.createEntityManager();
-         CityInfo cityInfo = new CityInfo(2200,"testTown");
+         cityInfo = new CityInfo(2200,"testTown");
          Address address = new Address("streetname", "4 tv", cityInfo);
          Phone phone = new Phone(22112211, "workPhone");
          Hobby hoppy = new Hobby("programming", "the future of mankind is programming, also good for making a blog about your dog pictures");
@@ -156,13 +157,12 @@ public class PersonFacadeTest {
     @Test
     public void testGetPersonsByHobby() {
         System.out.println("getPersonsByHobby");
-        String hobby = "";
-        PersonFacade instance = null;
-        List<Person> expResult = null;
-        List<PersonDTO> result = instance.getPersonsByHobby(hobby);
+        String hobby = "jumping";
+        
+        int expResult = 2;
+        int result = facade.getPersonsByHobby(hobby).size();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
     }
 
     /**
@@ -171,13 +171,12 @@ public class PersonFacadeTest {
     @Test
     public void testGetPersonsByCity() {
         System.out.println("getPersonsByCity");
-        CityInfo city = null;
-        PersonFacade instance = null;
-        List<Person> expResult = null;
-        List<Person> result = instance.getPersonsByCity(city);
+        
+        
+        int expResult = 2;
+        int result = facade.getPersonsByCity(cityInfo).size();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
     }
 
     /**
