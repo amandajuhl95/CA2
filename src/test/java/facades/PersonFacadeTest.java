@@ -1,5 +1,6 @@
 package facades;
 
+import dto.PersonDTO;
 import entities.Address;
 import entities.CityInfo;
 import entities.Person;
@@ -86,7 +87,7 @@ public class PersonFacadeTest {
         int number = 0;
         PersonFacade instance = null;
         Person expResult = null;
-        Person result = instance.getPerson(number);
+        PersonDTO result = instance.getPerson(number);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

@@ -1,5 +1,6 @@
 package facades;
 
+import dto.PersonDTO;
 import entities.Address;
 import entities.CityInfo;
 import entities.Person;
@@ -8,6 +9,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -39,9 +41,14 @@ public class PersonFacade {
         return emf.createEntityManager();
     }
     
-    public Person getPerson(int number)
+    public PersonDTO getPerson(int number)
     {
-        return new Person();
+        EntityManager em = getEntityManager();
+        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p WHERE p.phones.number = :number", Person.class);
+        Person person = query.setParameter("number", number).getSingleResult();
+        PersonDTO personDTO = new PersonDTO(person);
+
+        return personDTO;
     }
     
     public List<Person> getPersonsByHobby(String hobby)
