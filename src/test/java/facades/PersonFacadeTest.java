@@ -140,7 +140,7 @@ public class PersonFacadeTest {
         PersonDTO result = facade.getPerson(number);
         assertEquals(expResult, result.getFirstname());
         
-        assertEquals("the future of mankind is programming, also good for making a blog about your dog pictures", result.getHobbies().get(0));
+        assertEquals("super fun and easy", result.getHobbies().get(0).getDescription());
     
     }
 
@@ -171,45 +171,45 @@ public class PersonFacadeTest {
         assertEquals(expResult, result);
         
     }
+
+    /**
+     * Test of getPersonCountByHobby method, of class PersonFacade.
+     */
+    @Test
+    public void testGetPersonCountByHobby() {
+        System.out.println("getPersonCountByHobby");
+        String hobby = "jumping";
+        
+        int expResult = 2;
+        int result = facade.getPersonCountByHobby(hobby);
+        assertEquals(expResult, result);
+     
+    }
 //
 //    /**
-//     * Test of getPersonCountByHobby method, of class PersonFacade.
+//     * Test of getZipcodes method, of class PersonFacade.
 //     */
-//    @Test
-//    public void testGetPersonCountByHobby() {
-//        System.out.println("getPersonCountByHobby");
-//        String hobby = "jumping";
-//        
-//        int expResult = 2;
-//        int result = facade.getPersonCountByHobby(hobby);
-//        assertEquals(expResult, result);
-//     
-//    }
-////
-////    /**
-////     * Test of getZipcodes method, of class PersonFacade.
-////     */
-//    @Test
-//    public void testGetZipcodes() {
-//        System.out.println("getZipcodes");
-//       
-//        int expResult = 2200;
-//        List<Integer> result = facade.getZipcodes();
-//        assertEquals(expResult, (int) result.get(0));
-//      
-//    }
-//
-//    /**
-//     * Test of getPersonsByAdress method, of class PersonFacade.
-//     */
-//    @Test
-//    public void testGetPersonsByAdress() {
-//        System.out.println("getPersonsByAdress");
-//
-//        int expResult = 2200;
-//        int result = facade.getPersonsByAdress(address).get(0).getAddress().getCityInfo().getZip();
-//        assertEquals(expResult, result);
-//      
-//    }
+    @Test
+    public void testGetZipcodes() {
+        System.out.println("getZipcodes");
+       
+        int expResult = 2200;
+        List<Integer> result = facade.getZipcodes();
+        assertEquals(expResult, (int) result.get(0));
+      
+    }
+
+    /**
+     * Test of getPersonsByAdress method, of class PersonFacade.
+     */
+    @Test
+    public void testGetPersonsByAdress() {
+        System.out.println("getPersonsByAdress");
+
+        int expResult = 2200;
+        int result = facade.getPersonsByAdress(address).get(0).getAddress().getCityInfo().getZip();
+        assertEquals(expResult, result);
+      
+    }
 
 }
