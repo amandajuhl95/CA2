@@ -1,6 +1,7 @@
 package rest;
 
 import dto.PersonDTO;
+import entities.Person;
 import utils.EMF_Creator;
 import facades.PersonFacade;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -63,28 +64,22 @@ public class PersonResource {
     {
         return "{\"msg\":\"Hello World\"}";
     }
-//    
-//    @GET
-//    @Path("/{id}")
-//    @Produces({MediaType.APPLICATION_JSON})
-//    @Operation(summary = "Get Person info by ID",
-//            tags = {"Person"},
-//            responses = {
-//                @ApiResponse(
-//                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-//                @ApiResponse(responseCode = "200", description = "The Requested Person"),
-//                @ApiResponse(responseCode = "400", description = "Person not found")})
+    
+    @GET
+    @Path("/{number}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Get Person info by phonenumber",
+            tags = {"Person"},
+            responses = {
+                @ApiResponse(
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "The Requested Person"),
+                @ApiResponse(responseCode = "400", description = "Person not found")})
 
-//    public PersonDTO getPerson(@PathParam("id") long id) {
-//        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me", "2920 charlottenlund");
-//        p.addHobby("Programming");
-//        p.addHobby("Dicatorship");
-//        p.addHobby("Antifa");
-//        p.addPhone("+61 4231528302");
-//        p.addPhone("+45 67854231");
-//
-//        return p;
-//    }
+    public PersonDTO getPerson(@PathParam("number") int number) {
+        PersonDTO p = FACADE.getPerson(number);
+        return p;
+    }
 //    
 //    @GET
 //    @Path("/phone/{phone}")
