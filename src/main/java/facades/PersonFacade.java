@@ -67,7 +67,7 @@ public class PersonFacade {
 
     private CityInfo getCityInfo(String city) {
         EntityManager em = getEntityManager();
-        
+
         if (city.matches("[0-9]+")) {
             TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c WHERE c.zip = :zip", CityInfo.class);
             CityInfo cityInfo = query.setParameter("zip", city).getSingleResult();
@@ -83,7 +83,7 @@ public class PersonFacade {
     public List<PersonDTO> getPersonsByCity(String city) {
 
         EntityManager em = getEntityManager();
-        
+
         CityInfo cityInfo = getCityInfo(city);
         List<PersonDTO> personsDTO = new ArrayList();
 
@@ -97,18 +97,38 @@ public class PersonFacade {
         return personsDTO;
     }
 
-    public int getPersonCountByHobby(String hobby) {
-        Query query = getEntityManager().createQuery("SELECT COUNT(p) FROM Person p INNER JOIN p.hobbies pho WHERE pho.name = :hobby", Person.class);
-        int count = (int) query.getSingleResult();
+    public Long getPersonCountByHobby(String hobby) {
+
+        EntityManager em = getEntityManager();
+
+        Query query = em.createQuery("SELECT COUNT(p) FROM Person p INNER JOIN p.hobbies pho WHERE pho.name = :hobby");
+        Long count = (Long) query.setParameter("hobby", hobby).getSingleResult();
         return count;
     }
 
     public List<Integer> getZipcodes() {
-        return new ArrayList<Integer>();
+        EntityManager em = getEntityManager();
+
+        Query query = em.createQuery("SELECT c.zip FROM CityInfo c");
+        List<Integer> zipcodes = query.getResultList();
+        return zipcodes;
+
     }
 
-    public List<Person> getPersonsByAdress(Address address) {
-        return new ArrayList<Person>();
+    public List<PersonDTO> getPersonsByAdress(Address address) {
+
+        EntityManager em = getEntityManager();
+
+        List<PersonDTO> personsDTO = new ArrayList();
+
+        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p WHERE p.address = :address", Person.class);
+        List<Person> persons = query.setParameter("address", address.getStreet() + " " + address.getAddinfo()).getResultList();
+
+        for (Person person : persons) {
+            personsDTO.add(new PersonDTO(person));
+
+        }
+        return personsDTO;
     }
 
 }
