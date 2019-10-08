@@ -9,7 +9,9 @@ import entities.Hobby;
 import entities.Person;
 import entities.Phone;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,9 +32,9 @@ public class PersonDTO {
      @Schema(required = true, example = "2200 Copenhagen N")
     private String city;   
      @Schema(example = "[\"65321345\",\"78987654\"]")
-    private Map<Integer,String> phones = new HashMap();
+    private List<PhoneDTO> phones = new ArrayList();
     @Schema(example = "[\"Programming\",\"Beer\"]")
-    private Map<String,String> hobbies = new HashMap();
+    private List<HobbyDTO> hobbies = new ArrayList();
 
     public PersonDTO(Person person) {
         this.firstname = person.getFirstName();
@@ -43,12 +45,12 @@ public class PersonDTO {
         
         for (Hobby hobby : person.getHobbies()) {
            
-            this.hobbies.put(hobby.getName(), hobby.getDescription());
+            this.hobbies.add(new HobbyDTO(hobby));
         }
         
          for (Phone phone : person.getPhones()) {
            
-            this.phones.put(phone.getNumber(), phone.getDescription());
+            this.phones.add(new PhoneDTO(phone));
         }
     }
 
@@ -79,11 +81,11 @@ public class PersonDTO {
         return city;
     }
 
-    public Map<Integer, String> getPhones() {
+    public List<PhoneDTO> getPhones() {
         return phones;
     }
 
-    public Map<String, String> getHobbies() {
+    public List<HobbyDTO> getHobbies() {
         return hobbies;
     }
 

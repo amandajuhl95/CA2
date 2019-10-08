@@ -131,46 +131,46 @@ public class PersonFacadeTest {
     /**
      * Test of getPerson method, of class PersonFacade.
      */
-//    @Test
-//    public void testGetPerson() {
-//        System.out.println("getPerson");
-//        int number = 22112211;
-//
-//        String expResult = "jim";
-//        PersonDTO result = facade.getPerson(number);
-//        assertEquals(expResult, result.getFirstname());
-//        
-//        assertEquals("the future of mankind is programming, also good for making a blog about your dog pictures", result.getHobbies().get("programming"));
-//    
-//    }
-//
-//    /**
-//     * Test of getPersonsByHobby method, of class PersonFacade.
-//     */
-//    @Test
-//    public void testGetPersonsByHobby() {
-//        System.out.println("getPersonsByHobby");
-//        String hobby = "jumping";
-//        
-//        int expResult = 2;
-//        int result = facade.getPersonsByHobby(hobby).size();
-//        assertEquals(expResult, result);
-//        
-//    }
-//
-//    /**
-//     * Test of getPersonsByCity method, of class PersonFacade.
-//     */
-//    @Test
-//    public void testGetPersonsByCity() {
-//        System.out.println("getPersonsByCity");
-//        
-//        CityInfo info = p1.getAddress().getCityInfo();
-//        int expResult = 2;
-//        int result = facade.getPersonsByCity(info).size();
-//        assertEquals(expResult, result);
-//        
-//    }
+    @Test
+    public void testGetPerson() {
+        System.out.println("getPerson");
+        int number = 22112211;
+
+        String expResult = "jim";
+        PersonDTO result = facade.getPerson(number);
+        assertEquals(expResult, result.getFirstname());
+        
+        assertEquals("the future of mankind is programming, also good for making a blog about your dog pictures", result.getHobbies().get(0));
+    
+    }
+
+    /**
+     * Test of getPersonsByHobby method, of class PersonFacade.
+     */
+    @Test
+    public void testGetPersonsByHobby() {
+        System.out.println("getPersonsByHobby");
+        String hobby = "jumping";
+        
+        int expResult = 2;
+        int result = facade.getPersonsByHobby(hobby).size();
+        assertEquals(expResult, result);
+        
+    }
+
+    /**
+     * Test of getPersonsByCity method, of class PersonFacade.
+     */
+    @Test
+    public void testGetPersonsByCity() {
+        System.out.println("getPersonsByCity");
+        
+        CityInfo info = p1.getAddress().getCityInfo();
+        int expResult = 2;
+        int result = facade.getPersonsByCity(info).size();
+        assertEquals(expResult, result);
+        
+    }
 //
 //    /**
 //     * Test of getPersonCountByHobby method, of class PersonFacade.
