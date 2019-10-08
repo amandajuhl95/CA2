@@ -165,9 +165,8 @@ public class PersonFacadeTest {
     public void testGetPersonsByCity() {
         System.out.println("getPersonsByCity");
         
-        CityInfo info = p1.getAddress().getCityInfo();
         int expResult = 2;
-        int result = facade.getPersonsByCity(info).size();
+        int result = facade.getPersonsByCity(p1.getAddress().getCityInfo().getCity()).size();
         assertEquals(expResult, result);
         
     }

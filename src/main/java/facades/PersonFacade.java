@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 /**
@@ -64,14 +65,30 @@ public class PersonFacade {
         return personsDTO;
     }
 
-    public List<PersonDTO> getPersonsByCity(CityInfo city) {
+    private CityInfo getCityInfo(String city) {
         EntityManager em = getEntityManager();
+        
+        if (city.matches("[0-9]+")) {
+            TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c WHERE c.zip = :zip", CityInfo.class);
+            CityInfo cityInfo = query.setParameter("zip", city).getSingleResult();
+            return cityInfo;
+        } else {
+            TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c WHERE c.city = :city", CityInfo.class);
+            CityInfo cityInfo = query.setParameter("city", city).getSingleResult();
+            return cityInfo;
+        }
 
+    }
+
+    public List<PersonDTO> getPersonsByCity(String city) {
+
+        EntityManager em = getEntityManager();
+        
+        CityInfo cityInfo = getCityInfo(city);
         List<PersonDTO> personsDTO = new ArrayList();
 
-        String theCity = city.getCity();
         TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.address a WHERE a.cityInfo.id = :city", Person.class);
-        List<Person> persons = query.setParameter("city", city.getId()).getResultList();
+        List<Person> persons = query.setParameter("city", cityInfo.getId()).getResultList();
 
         for (Person person : persons) {
             personsDTO.add(new PersonDTO(person));
@@ -81,7 +98,9 @@ public class PersonFacade {
     }
 
     public int getPersonCountByHobby(String hobby) {
-        return 0;
+        Query query = getEntityManager().createQuery("SELECT COUNT(p) FROM Person p INNER JOIN p.hobbies pho WHERE pho.name = :hobby", Person.class);
+        int count = (int) query.getSingleResult();
+        return count;
     }
 
     public List<Integer> getZipcodes() {
