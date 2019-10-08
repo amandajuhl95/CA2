@@ -56,7 +56,7 @@ public class PersonResourceTest {
     public static void setUpClass() {
         //This method must be called before you request the EntityManagerFactory
         EMF_Creator.startREST_TestWithDB();
-        emf = EMF_Creator.createEntityManagerFactory(DbSelector.TEST, Strategy.CREATE);
+        emf = EMF_Creator.createEntityManagerFactory(DbSelector.TEST, Strategy.DROP_AND_CREATE);
 
         httpServer = startServer();
         //Setup RestAssured
@@ -105,8 +105,7 @@ public class PersonResourceTest {
         address2.addPerson(p2);
         hoppy.addPerson(p2);
         hoppy2.addPerson(p2);
-        phone2.setPerson(p2);
-//         
+        phone2.setPerson(p2);         
 
         try {
             em.getTransaction().begin();
@@ -133,41 +132,21 @@ public class PersonResourceTest {
         given().when().get("/person").then().statusCode(200);
     }
 
-//    /**
-//     * Test of getPerson (with a given id) method, of class PersonResource.
-//     */
-//    @org.junit.Test
-//    public void testGetPerson() {
-//        System.out.println("getPerson");
-//          given()
-//                .contentType("application/json")
-//                .get("/Person/1").then()
-//                .assertThat()
-//                .statusCode(HttpStatus.OK_200.getStatusCode())
-//                .body("hobby", hasItems("SomeHobby", 
-//                        "SomeHobby"),
-//                        "firstName", equalTo("name"),
-//                        "lastName", equalTo("name"));
-//
-//    }
-//    
-//
-//    /**
-//     * Test of getPersonByPhone method, of class PersonResource.
-//     */
-//    @org.junit.Test
-//    public void testGetPersonByPhone() {
-//        System.out.println("getPersonByPhone");
-//     given()
-//                .contentType("application/json")
-//                .get("/Person/phone/{phone}").then()
-//                .assertThat()
-//                .statusCode(HttpStatus.OK_200.getStatusCode())
-//                .body("hobby", hasItems("SomeHobby", 
-//                        "SomeHobby"),
-//                        "firstName", equalTo("name"),
-//                        "lastName", equalTo("name"));
-//    }
+    /**
+     * Test of getPerson method, of class PersonResource.
+     */
+    @Test
+    public void testGetPerson() {
+        System.out.println("getPerson");
+     given()
+                .contentType("application/json")
+                .get("/person/" + p1.getPhones().get(0).getNumber()).then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body( "firstname", equalTo(p1.getFirstName()),
+                        "lastname", equalTo(p1.getLastName()),
+                        "hobbies.hobby", hasItems(p1.getHobbies().get(0).getName()));
+    }
 //
 //    /**
 //     * Test of getPersonsByHobby method, of class PersonResource.

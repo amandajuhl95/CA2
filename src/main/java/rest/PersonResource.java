@@ -60,11 +60,10 @@ public class PersonResource {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public String demo()
-    {
+    public String demo() {
         return "{\"msg\":\"Hello World\"}";
     }
-    
+
     @GET
     @Path("/{number}")
     @Produces({MediaType.APPLICATION_JSON})
@@ -78,62 +77,35 @@ public class PersonResource {
 
     public PersonDTO getPerson(@PathParam("number") int number) {
         PersonDTO p = FACADE.getPerson(number);
+
+        if (p == null) {
+            throw new WebApplicationException("No person found with the given phonenumber", 400);
+        }
+
         return p;
     }
-//    
-//    @GET
-//    @Path("/phone/{phone}")
-//    @Produces({MediaType.APPLICATION_JSON})
-//    @Operation(summary = "Get Person info by phonenumber",
-//            tags = {"Person"},
-//            responses = {
-//                @ApiResponse(
-//                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-//                @ApiResponse(responseCode = "200", description = "The Requested Person"),
-//                @ApiResponse(responseCode = "400", description = "Person not found")})
-//
-//    public PersonDTO getPersonByPhone(@PathParam("phone") String phone) {
-//        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me", "2920 charlottenlund");
-//        p.addHobby("Programming");
-//        p.addHobby("Dicatorship");
-//        p.addHobby("Antifa");
-//        p.addPhone(phone);
-//
-//        return p;
-//    }
-//    
-//    @GET
-//    @Path("/persons/{hobby}")
-//    @Produces({MediaType.APPLICATION_JSON})
-//    @Operation(summary = "Get all persons info by hobby",
-//            tags = {"Person"},
-//            responses = {
-//                @ApiResponse(
-//                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-//                @ApiResponse(responseCode = "200", description = "The Requested List of persons"),
-//                @ApiResponse(responseCode = "400", description = "List of Persons not found")})
-//
-//    public List<PersonDTO> getPersonsByHobby(@PathParam("hobby") String hobby) {
-//        List<PersonDTO> persons = new ArrayList();
-//        
-//         if (hobby== null  || hobby == ""){
-//            throw new WebApplicationException("id not passed correctly",400);
-//        }
-//         
-//        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me", "2920 charlottenlund");
-//        PersonDTO p2 = new PersonDTO("Ralle", "Clinton", "ralle-4-ever@hotmail.com", "Fasanvej 2", "2920 charlottenlund");
-//        
-//        p.addHobby(hobby);
-//        p.addHobby("Dicatorship");
-//        p.addPhone("32143214");
-//        p2.addHobby(hobby);
-//        p2.addPhone("67676767");
-//        
-//        persons.add(p);
-//        persons.add(p2);
-//        
-//        return persons;
-//    }
+
+    @GET
+    @Path("/persons/{hobby}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Get all persons info by hobby",
+            tags = {"Person"},
+            responses = {
+                @ApiResponse(
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "The Requested List of persons"),
+                @ApiResponse(responseCode = "400", description = "List of Persons not found")})
+
+    public List<PersonDTO> getPersonsByHobby(@PathParam("hobby") String hobby) {
+
+        if (hobby == null || "".equals(hobby)) {
+
+            throw new WebApplicationException("Hobby must be defined", 400);
+        }
+
+        List<PersonDTO> persons = FACADE.getPersonsByHobby(hobby);
+        return persons;
+    }
 //    
 //    //get all persons from a specific city
 //    @GET
@@ -282,8 +254,6 @@ public class PersonResource {
 //        person.setId(464);
 //        return person;
 //    }
-
-
 
 }
 

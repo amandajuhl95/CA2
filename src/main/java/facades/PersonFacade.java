@@ -70,8 +70,8 @@ public class PersonFacade {
         List<PersonDTO> personsDTO = new ArrayList();
 
         String theCity = city.getCity();
-        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.address pa WHERE pa.cityInfo.city = :theCity", Person.class);
-        List<Person> persons = query.setParameter("theCity", theCity).getResultList();
+        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.address a WHERE a.cityInfo.id = :city", Person.class);
+        List<Person> persons = query.setParameter("city", city.getId()).getResultList();
 
         for (Person person : persons) {
             personsDTO.add(new PersonDTO(person));
