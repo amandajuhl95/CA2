@@ -6,6 +6,7 @@ import entities.CityInfo;
 import entities.Hobby;
 import entities.Person;
 import entities.Phone;
+import java.util.ArrayList;
 import java.util.List;
 import utils.EMF_Creator;
 
@@ -159,16 +160,16 @@ public class PersonFacadeTest {
     /**
      * Test of getPersonsByCity method, of class PersonFacade.
      */
-//    @Test
-//    public void testGetPersonsByCity() {
-//        System.out.println("getPersonsByCity");
-//        
-//        CityInfo info = p1.getAddress().getCityInfo();
-//        int expResult = 2;
-//        int result = facade.getPersonsByCity(info).size();
-//        assertEquals(expResult, result);
-//        
-//    }
+    @Test
+    public void testGetPersonsByCity() {
+        System.out.println("getPersonsByCity");
+        
+        CityInfo info = p1.getAddress().getCityInfo();
+        int expResult = 2;
+        int result = facade.getPersonsByCity(info).size();
+        assertEquals(expResult, result);
+        
+    }
 
     /**
      * Test of getPersonCountByHobby method, of class PersonFacade.
@@ -176,27 +177,25 @@ public class PersonFacadeTest {
 //    @Test
 //    public void testGetPersonCountByHobby() {
 //        System.out.println("getPersonCountByHobby");
-//        String hobby = "";
-//        PersonFacade instance = null;
-//        int expResult = 0;
-//        int result = instance.getPersonCountByHobby(hobby);
+//        String hobby = "jumping";
+//        
+//        int expResult = 2;
+//        int result = facade.getPersonCountByHobby(hobby);
 //        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
+//     
 //    }
-//
-//    /**
-//     * Test of getZipcodes method, of class PersonFacade.
-//     */
+////
+////    /**
+////     * Test of getZipcodes method, of class PersonFacade.
+////     */
 //    @Test
 //    public void testGetZipcodes() {
 //        System.out.println("getZipcodes");
-//        PersonFacade instance = null;
-//        List<Integer> expResult = null;
-//        List<Integer> result = instance.getZipcodes();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
+//       
+//        int expResult = 2200;
+//        List<Integer> result = facade.getZipcodes();
+//        assertEquals(expResult, result.get(0));
+//      
 //    }
 //
 //    /**
