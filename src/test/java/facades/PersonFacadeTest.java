@@ -34,6 +34,7 @@ public class PersonFacadeTest {
      private Person p1;
     private Person p2;
     private CityInfo cityInfo;
+    Address address;
 
     public PersonFacadeTest() {
     }
@@ -56,7 +57,7 @@ public class PersonFacadeTest {
         
          EntityManager em = emf.createEntityManager();
          cityInfo = new CityInfo(2200,"testTown");
-         Address address = new Address("streetname", "4 tv", cityInfo);
+         address = new Address("streetname", "4 tv", cityInfo);
          Phone phone = new Phone(22112211, "workPhone");
          Hobby hoppy = new Hobby("programming", "the future of mankind is programming, also good for making a blog about your dog pictures");
          p1 = new Person("jim@gmail.com", "jim", "theMan", address);
@@ -130,50 +131,50 @@ public class PersonFacadeTest {
     /**
      * Test of getPerson method, of class PersonFacade.
      */
-    @Test
-    public void testGetPerson() {
-        System.out.println("getPerson");
-        int number = 22112211;
-
-        String expResult = "jim";
-        PersonDTO result = facade.getPerson(number);
-        assertEquals(expResult, result.getFirstname());
-        
-        assertEquals("the future of mankind is programming, also good for making a blog about your dog pictures", result.getHobbies().get("programming"));
-    
-    }
-
-    /**
-     * Test of getPersonsByHobby method, of class PersonFacade.
-     */
-    @Test
-    public void testGetPersonsByHobby() {
-        System.out.println("getPersonsByHobby");
-        String hobby = "jumping";
-        
-        int expResult = 2;
-        int result = facade.getPersonsByHobby(hobby).size();
-        assertEquals(expResult, result);
-        
-    }
-
-    /**
-     * Test of getPersonsByCity method, of class PersonFacade.
-     */
-    @Test
-    public void testGetPersonsByCity() {
-        System.out.println("getPersonsByCity");
-        
-        CityInfo info = p1.getAddress().getCityInfo();
-        int expResult = 2;
-        int result = facade.getPersonsByCity(info).size();
-        assertEquals(expResult, result);
-        
-    }
-
-    /**
-     * Test of getPersonCountByHobby method, of class PersonFacade.
-     */
+//    @Test
+//    public void testGetPerson() {
+//        System.out.println("getPerson");
+//        int number = 22112211;
+//
+//        String expResult = "jim";
+//        PersonDTO result = facade.getPerson(number);
+//        assertEquals(expResult, result.getFirstname());
+//        
+//        assertEquals("the future of mankind is programming, also good for making a blog about your dog pictures", result.getHobbies().get("programming"));
+//    
+//    }
+//
+//    /**
+//     * Test of getPersonsByHobby method, of class PersonFacade.
+//     */
+//    @Test
+//    public void testGetPersonsByHobby() {
+//        System.out.println("getPersonsByHobby");
+//        String hobby = "jumping";
+//        
+//        int expResult = 2;
+//        int result = facade.getPersonsByHobby(hobby).size();
+//        assertEquals(expResult, result);
+//        
+//    }
+//
+//    /**
+//     * Test of getPersonsByCity method, of class PersonFacade.
+//     */
+//    @Test
+//    public void testGetPersonsByCity() {
+//        System.out.println("getPersonsByCity");
+//        
+//        CityInfo info = p1.getAddress().getCityInfo();
+//        int expResult = 2;
+//        int result = facade.getPersonsByCity(info).size();
+//        assertEquals(expResult, result);
+//        
+//    }
+//
+//    /**
+//     * Test of getPersonCountByHobby method, of class PersonFacade.
+//     */
 //    @Test
 //    public void testGetPersonCountByHobby() {
 //        System.out.println("getPersonCountByHobby");
@@ -194,7 +195,7 @@ public class PersonFacadeTest {
 //       
 //        int expResult = 2200;
 //        List<Integer> result = facade.getZipcodes();
-//        assertEquals(expResult, result.get(0));
+//        assertEquals(expResult, (int) result.get(0));
 //      
 //    }
 //
@@ -204,13 +205,11 @@ public class PersonFacadeTest {
 //    @Test
 //    public void testGetPersonsByAdress() {
 //        System.out.println("getPersonsByAdress");
-//        Address address = null;
-//        PersonFacade instance = null;
-//        List<Person> expResult = null;
-//        List<Person> result = instance.getPersonsByAdress(address);
+//
+//        int expResult = 2200;
+//        int result = facade.getPersonsByAdress(address).get(0).getAddress().getCityInfo().getZip();
 //        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
+//      
 //    }
 
 }
