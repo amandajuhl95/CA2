@@ -122,6 +122,7 @@ public class PersonResource {
     public List<PersonDTO> getPersonsByCity(@PathParam("city") String city) {
         
          if (city== null  || "".equals(city)){
+             
             throw new WebApplicationException("City must be defined",400);
         }
          
@@ -129,40 +130,26 @@ public class PersonResource {
         return persons;
     }
     
-//    //count of persons with given hobby
-//      @GET
-//    @Path("/hobby/count/{hobby}")
-//    @Produces({MediaType.APPLICATION_JSON})
-//    @Operation(summary = "number of persons with a given hobby",
-//            tags = {"Person"},
-//            responses = {
-//                @ApiResponse(
-//                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-//                @ApiResponse(responseCode = "200", description = "the number of people with that hobby"),
-//                @ApiResponse(responseCode = "400", description = "List of Persons not found")})
-//
-//    public int getNumberOfPersonsWithHobby(@PathParam("hobby") String hobby) {
-//        
-//         if (hobby== null  || hobby == ""){
-//            throw new WebApplicationException("id not passed correctly",400);
-//        }
-//        
-//        List<PersonDTO> persons = new ArrayList();
-//        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me", "2920 charlottenlund");
-//        PersonDTO p2 = new PersonDTO("Ralle", "Clinton", "ralle-4-ever@hotmail.com", "Fasanvej 2", "2920 charlottenlund");
-//        
-//        
-//        p.addHobby("Dicatorship");
-//        p.addPhone("32143214");
-//        p2.addHobby("jumping");
-//        p2.addPhone("67676797");
-//        
-//        
-//        persons.add(p);
-//        persons.add(p2);
-//        
-//        return persons.size();
-//    }
+    //count of persons with given hobby
+      @GET
+    @Path("/hobby/count/{hobby}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "number of persons with a given hobby",
+            tags = {"Person"},
+            responses = {
+                @ApiResponse(
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "the number of people with that hobby"),
+                @ApiResponse(responseCode = "400", description = "List of Persons not found")})
+
+    public int getNumberOfPersonsWithHobby(@PathParam("hobby") String hobby) {
+        
+         if (hobby== null  || "".equals(hobby)){
+            throw new WebApplicationException("Hobby must be defined",400);
+        }
+         
+        return FACADE.getPersonCountByHobby(hobby);
+    }
 //    
 //       @GET
 //    @Path("/allzip")
