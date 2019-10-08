@@ -8,12 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
 /**
  *
- * Rename Class to a relevant name Add add relevant facade methods
+ * @author Amanda
  */
 public class PersonFacade {
 
@@ -22,7 +21,6 @@ public class PersonFacade {
     
     //Private Constructor to ensure Singleton
     private PersonFacade() {}
-    
     
     /**
      * 
@@ -44,16 +42,26 @@ public class PersonFacade {
     public PersonDTO getPerson(int number)
     {
         EntityManager em = getEntityManager();
-        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p WHERE p.phones.number = :number", Person.class);
+        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.phones ph WHERE ph.number = :number", Person.class);
         Person person = query.setParameter("number", number).getSingleResult();
         PersonDTO personDTO = new PersonDTO(person);
 
         return personDTO;
     }
     
-    public List<Person> getPersonsByHobby(String hobby)
+    public List<PersonDTO> getPersonsByHobby(String hobby)
     {
-        return new ArrayList<Person>();
+        EntityManager em = getEntityManager();
+        
+        List<PersonDTO> personsDTO = new ArrayList();
+        
+        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p WHERE p.hobbies.name = :hobby", Person.class);
+        List<Person> persons = query.setParameter("hobby", hobby).getResultList();
+
+        for (Person person : persons) {
+            personsDTO.add(new PersonDTO(person));
+        }
+        return personsDTO;
     }
     
     public List<Person> getPersonsByCity(CityInfo city)
