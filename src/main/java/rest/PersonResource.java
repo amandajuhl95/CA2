@@ -106,41 +106,29 @@ public class PersonResource {
         List<PersonDTO> persons = FACADE.getPersonsByHobby(hobby);
         return persons;
     }
-//    
-//    //get all persons from a specific city
-//    @GET
-//    @Path("/city/{city}")
-//    @Produces({MediaType.APPLICATION_JSON})
-//    @Operation(summary = "Get all persons info by city",
-//            tags = {"Person"},
-//            responses = {
-//                @ApiResponse(
-//                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-//                @ApiResponse(responseCode = "200", description = "The Requested List of persons"),
-//                @ApiResponse(responseCode = "400", description = "List of Persons not found")})
-//
-//    public List<PersonDTO> getPersonsByCity(@PathParam("city") String city) {
-//        
-//         if (city== null  || city == ""){
-//            throw new WebApplicationException("id not passed correctly",400);
-//        }
-//         
-//        List<PersonDTO> persons = new ArrayList();
-//        PersonDTO p = new PersonDTO("Rolf", "Trump", "trump-4-ever@hotmail.com", "I-hope-u-dont-agree-with-me", "2920 charlottenlund");
-//        PersonDTO p2 = new PersonDTO("Ralle", "Clinton", "ralle-4-ever@hotmail.com", "Fasanvej 2", "2920 charlottenlund");
-//        
-//        p.setCity(city);
-//        p.addHobby("Dicatorship");
-//        p.addPhone("32143214");
-//        p2.addHobby("jumping");
-//        p2.addPhone("67676797");
-//        p2.setCity(city);
-//        
-//        persons.add(p);
-//        persons.add(p2);
-//        
-//        return persons;
-//    }
+    
+    //get all persons from a specific city
+    @GET
+    @Path("/city/{city}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Get all persons info by city",
+            tags = {"Person"},
+            responses = {
+                @ApiResponse(
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "The Requested List of persons"),
+                @ApiResponse(responseCode = "400", description = "List of Persons not found")})
+
+    public List<PersonDTO> getPersonsByCity(@PathParam("city") String city) {
+        
+         if (city== null  || "".equals(city)){
+            throw new WebApplicationException("City must be defined",400);
+        }
+         
+        List<PersonDTO> persons = FACADE.getPersonsByCity(city);
+        return persons;
+    }
+    
 //    //count of persons with given hobby
 //      @GET
 //    @Path("/hobby/count/{hobby}")
