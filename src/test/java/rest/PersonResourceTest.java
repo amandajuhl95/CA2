@@ -35,7 +35,7 @@ import utils.EMF_Creator.DbSelector;
 import utils.EMF_Creator.Strategy;
 
 //Uncomment the line below, to temporarily disable this test
-@Disabled
+// @Disabled
 public class PersonResourceTest {
 
     private static final int SERVER_PORT = 7777;
@@ -45,6 +45,9 @@ public class PersonResourceTest {
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
     private static HttpServer httpServer;
     private static EntityManagerFactory emf;
+    
+    private Person p1;
+    private Person p2;
 
     static HttpServer startServer() {
         ResourceConfig rc = ResourceConfig.forApplication(new ApplicationConfig());
@@ -80,22 +83,27 @@ public class PersonResourceTest {
          EntityManager em = emf.createEntityManager();
          CityInfo cityInfo = new CityInfo(2200,"testTown");
          Address address = new Address("streetname", "4 tv", cityInfo);
-         cityInfo.addAddress(address);
          Phone phone = new Phone(22112211, "workPhone");
          Hobby hoppy = new Hobby("programming", "the future of mankind is programming, also good for making a blog about your dog pictures");
-         Person p1 = new Person("jim@gmail.com", "jim", "theMan", address);
+         p1 = new Person("jim@gmail.com", "jim", "theMan", address);
+         
+       
+         
+         
+         Address address2 = new Address("gadevejen", "1 th", cityInfo);       
+         Phone phone2 = new Phone(99889988, "privatePhone");
+         Hobby hoppy2 = new Hobby("jumping", "super fun and easy");
+         p2 = new Person("bill@gmail.com", "bill", "LastName", address2);
+         
+           cityInfo.addAddress(address);
          p1.addHobby(hoppy);
+         p1.addHobby(hoppy2);
          p1.addPhone(phone);
          address.addPerson(p1);
          hoppy.addPerson(p1);
          phone.setPerson(p1);
          
-         
-         Address address2 = new Address("gadevejen", "1 th", cityInfo);
          cityInfo.addAddress(address2);
-         Phone phone2 = new Phone(99889988, "privatePhone");
-         Hobby hoppy2 = new Hobby("jumping", "super fun and easy");
-         Person p2 = new Person("bill@gmail.com", "bill", "LastName", address2);
          p2.addHobby(hoppy2);
          p2.addHobby(hoppy);
          p2.addPhone(phone2);
@@ -103,7 +111,7 @@ public class PersonResourceTest {
          hoppy.addPerson(p2);
          hoppy2.addPerson(p2);
          phone2.setPerson(p2);
-         
+//         
          
 
         try {
@@ -113,7 +121,13 @@ public class PersonResourceTest {
             em.createNamedQuery("Hobby.deleteAllRows").executeUpdate();
             em.createNamedQuery("Phone.deleteAllRows").executeUpdate();
             em.createNamedQuery("CityInfo.deleteAllRows").executeUpdate();
-       
+            em.persist(cityInfo);
+
+            
+             
+              em.persist(p1);
+               em.persist(p2);
+          
            
             em.getTransaction().commit();
 
@@ -123,9 +137,6 @@ public class PersonResourceTest {
         
     }
 
-    @After
-    public void tearDown() throws Exception {
-    }
     
     @Test
     public void testServerIsUp() {
