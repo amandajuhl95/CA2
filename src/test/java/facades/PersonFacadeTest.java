@@ -3,7 +3,9 @@ package facades;
 import dto.PersonDTO;
 import entities.Address;
 import entities.CityInfo;
+import entities.Hobby;
 import entities.Person;
+import entities.Phone;
 import java.util.List;
 import utils.EMF_Creator;
 
@@ -22,11 +24,14 @@ import utils.EMF_Creator.DbSelector;
 import utils.EMF_Creator.Strategy;
 
 //Uncomment the line below, to temporarily disable this test
-@Disabled
+//@Disabled
 public class PersonFacadeTest {
 
     private static EntityManagerFactory emf;
     private static PersonFacade facade;
+    
+     private Person p1;
+    private Person p2;
 
     public PersonFacadeTest() {
     }
@@ -56,9 +61,62 @@ public class PersonFacadeTest {
     // Setup the DataBase in a known state BEFORE EACH TEST
     //TODO -- Make sure to change the script below to use YOUR OWN entity class
     @BeforeEach
-    public void setUp() {
-    }
+  public void setUp() {
+        
+         EntityManager em = emf.createEntityManager();
+         CityInfo cityInfo = new CityInfo(2200,"testTown");
+         Address address = new Address("streetname", "4 tv", cityInfo);
+         Phone phone = new Phone(22112211, "workPhone");
+         Hobby hoppy = new Hobby("programming", "the future of mankind is programming, also good for making a blog about your dog pictures");
+         p1 = new Person("jim@gmail.com", "jim", "theMan", address);
+         
+       
+         
+         
+         Address address2 = new Address("gadevejen", "1 th", cityInfo);       
+         Phone phone2 = new Phone(99889988, "privatePhone");
+         Hobby hoppy2 = new Hobby("jumping", "super fun and easy");
+         p2 = new Person("bill@gmail.com", "bill", "LastName", address2);
+         
+         cityInfo.addAddress(address);
+         p1.addHobby(hoppy);
+         p1.addHobby(hoppy2);
+         p1.addPhone(phone);
+         address.addPerson(p1);
+         hoppy.addPerson(p1);
+         phone.setPerson(p1);
+         
+         cityInfo.addAddress(address2);
+         p2.addHobby(hoppy2);
+         p2.addHobby(hoppy);
+         p2.addPhone(phone2);
+         address2.addPerson(p2);
+         hoppy.addPerson(p2);
+         hoppy2.addPerson(p2);
+         phone2.setPerson(p2);
+         
+         
 
+        try {
+            em.getTransaction().begin();
+            em.createNamedQuery("Hobby.deleteAllRows").executeUpdate();
+            em.createNamedQuery("Phone.deleteAllRows").executeUpdate();
+            em.createNamedQuery("Person.deleteAllRows").executeUpdate();
+            em.createNamedQuery("Address.deleteAllRows").executeUpdate();
+            em.createNamedQuery("CityInfo.deleteAllRows").executeUpdate();
+
+              em.persist(p1);
+               em.persist(p2);
+          
+           
+            em.getTransaction().commit();
+
+        } finally {
+            em.close();
+        }
+        
+    }
+  
     @AfterEach
     public void tearDown() {
 //        Remove any data after each test was run
@@ -67,7 +125,7 @@ public class PersonFacadeTest {
     /**
      * Test of getFacadeExample method, of class PersonFacade.
      */
-    @org.junit.Test
+    @Test
     public void testGetFacadeExample() {
         System.out.println("getFacadeExample");
         EntityManagerFactory _emf = null;
@@ -81,22 +139,21 @@ public class PersonFacadeTest {
     /**
      * Test of getPerson method, of class PersonFacade.
      */
-    @org.junit.Test
+    @Test
     public void testGetPerson() {
         System.out.println("getPerson");
-        int number = 0;
-        PersonFacade instance = null;
-        Person expResult = null;
-        PersonDTO result = instance.getPerson(number);
+        int number = 22112211;
+
+        String expResult = "jim";
+        String result = facade.getPerson(number).getFirstname();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    
     }
 
     /**
      * Test of getPersonsByHobby method, of class PersonFacade.
      */
-    @org.junit.Test
+    @Test
     public void testGetPersonsByHobby() {
         System.out.println("getPersonsByHobby");
         String hobby = "";
@@ -111,7 +168,7 @@ public class PersonFacadeTest {
     /**
      * Test of getPersonsByCity method, of class PersonFacade.
      */
-    @org.junit.Test
+    @Test
     public void testGetPersonsByCity() {
         System.out.println("getPersonsByCity");
         CityInfo city = null;
@@ -126,7 +183,7 @@ public class PersonFacadeTest {
     /**
      * Test of getPersonCountByHobby method, of class PersonFacade.
      */
-    @org.junit.Test
+    @Test
     public void testGetPersonCountByHobby() {
         System.out.println("getPersonCountByHobby");
         String hobby = "";
@@ -141,7 +198,7 @@ public class PersonFacadeTest {
     /**
      * Test of getZipcodes method, of class PersonFacade.
      */
-    @org.junit.Test
+    @Test
     public void testGetZipcodes() {
         System.out.println("getZipcodes");
         PersonFacade instance = null;
@@ -155,7 +212,7 @@ public class PersonFacadeTest {
     /**
      * Test of getPersonsByAdress method, of class PersonFacade.
      */
-    @org.junit.Test
+    @Test
     public void testGetPersonsByAdress() {
         System.out.println("getPersonsByAdress");
         Address address = null;

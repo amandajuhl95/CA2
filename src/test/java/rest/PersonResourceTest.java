@@ -1,6 +1,5 @@
 package rest;
 
-
 import dto.PersonDTO;
 import entities.Address;
 import entities.CityInfo;
@@ -41,11 +40,10 @@ public class PersonResourceTest {
     private static final int SERVER_PORT = 7777;
     private static final String SERVER_URL = "http://localhost/api";
 
-    
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
     private static HttpServer httpServer;
     private static EntityManagerFactory emf;
-    
+
     private Person p1;
     private Person p2;
 
@@ -59,92 +57,81 @@ public class PersonResourceTest {
         //This method must be called before you request the EntityManagerFactory
         EMF_Creator.startREST_TestWithDB();
         emf = EMF_Creator.createEntityManagerFactory(DbSelector.TEST, Strategy.CREATE);
-        
+
         httpServer = startServer();
         //Setup RestAssured
         RestAssured.baseURI = SERVER_URL;
         RestAssured.port = SERVER_PORT;
         RestAssured.defaultParser = Parser.JSON;
     }
-    
+
     @AfterAll
-    public static void closeTestServer(){
+    public static void closeTestServer() {
         //System.in.read();
-         //Don't forget this, if you called its counterpart in @BeforeAll
-         EMF_Creator.endREST_TestWithDB();
-         httpServer.shutdownNow();
+        //Don't forget this, if you called its counterpart in @BeforeAll
+        EMF_Creator.endREST_TestWithDB();
+        httpServer.shutdownNow();
     }
-    
+
     // Setup the DataBase (used by the test-server and this test) in a known state BEFORE EACH TEST
     //TODO -- Make sure to change the EntityClass used below to use YOUR OWN (renamed) Entity class
     @BeforeEach
     public void setUp() {
-        
-         EntityManager em = emf.createEntityManager();
-         CityInfo cityInfo = new CityInfo(2200,"testTown");
-         Address address = new Address("streetname", "4 tv", cityInfo);
-         Phone phone = new Phone(22112211, "workPhone");
-         Hobby hoppy = new Hobby("programming", "the future of mankind is programming, also good for making a blog about your dog pictures");
-         p1 = new Person("jim@gmail.com", "jim", "theMan", address);
-         
-       
-         
-         
-         Address address2 = new Address("gadevejen", "1 th", cityInfo);       
-         Phone phone2 = new Phone(99889988, "privatePhone");
-         Hobby hoppy2 = new Hobby("jumping", "super fun and easy");
-         p2 = new Person("bill@gmail.com", "bill", "LastName", address2);
-         
-           cityInfo.addAddress(address);
-         p1.addHobby(hoppy);
-         p1.addHobby(hoppy2);
-         p1.addPhone(phone);
-         address.addPerson(p1);
-         hoppy.addPerson(p1);
-         phone.setPerson(p1);
-         
-         cityInfo.addAddress(address2);
-         p2.addHobby(hoppy2);
-         p2.addHobby(hoppy);
-         p2.addPhone(phone2);
-         address2.addPerson(p2);
-         hoppy.addPerson(p2);
-         hoppy2.addPerson(p2);
-         phone2.setPerson(p2);
+
+        EntityManager em = emf.createEntityManager();
+        CityInfo cityInfo = new CityInfo(2200, "testTown");
+        Address address = new Address("streetname", "4 tv", cityInfo);
+        Phone phone = new Phone(22112211, "workPhone");
+        Hobby hoppy = new Hobby("programming", "the future of mankind is programming, also good for making a blog about your dog pictures");
+        p1 = new Person("jim@gmail.com", "jim", "theMan", address);
+
+        Address address2 = new Address("gadevejen", "1 th", cityInfo);
+        Phone phone2 = new Phone(99889988, "privatePhone");
+        Hobby hoppy2 = new Hobby("jumping", "super fun and easy");
+        p2 = new Person("bill@gmail.com", "bill", "LastName", address2);
+
+        cityInfo.addAddress(address);
+        p1.addHobby(hoppy);
+        p1.addHobby(hoppy2);
+        p1.addPhone(phone);
+        address.addPerson(p1);
+        hoppy.addPerson(p1);
+        phone.setPerson(p1);
+
+        cityInfo.addAddress(address2);
+        p2.addHobby(hoppy2);
+        p2.addHobby(hoppy);
+        p2.addPhone(phone2);
+        address2.addPerson(p2);
+        hoppy.addPerson(p2);
+        hoppy2.addPerson(p2);
+        phone2.setPerson(p2);
 //         
-         
 
         try {
             em.getTransaction().begin();
-            em.createNamedQuery("Person.deleteAllRows").executeUpdate();
-            em.createNamedQuery("Address.deleteAllRows").executeUpdate();
             em.createNamedQuery("Hobby.deleteAllRows").executeUpdate();
             em.createNamedQuery("Phone.deleteAllRows").executeUpdate();
+            em.createNamedQuery("Person.deleteAllRows").executeUpdate();
+            em.createNamedQuery("Address.deleteAllRows").executeUpdate();
             em.createNamedQuery("CityInfo.deleteAllRows").executeUpdate();
-            em.persist(cityInfo);
 
-            
-             
-              em.persist(p1);
-               em.persist(p2);
-          
-           
+            em.persist(p1);
+            em.persist(p2);
+
             em.getTransaction().commit();
 
         } finally {
             em.close();
         }
-        
+
     }
 
-    
     @Test
     public void testServerIsUp() {
         System.out.println("Testing is server UP");
         given().when().get("/person").then().statusCode(200);
     }
-
- 
 
 //    /**
 //     * Test of getPerson (with a given id) method, of class PersonResource.
@@ -291,5 +278,4 @@ public class PersonResourceTest {
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
-   
-  }
+}

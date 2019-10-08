@@ -25,7 +25,7 @@ public class Person implements Serializable {
     private String email;
     private String firstName;
     private String lastName;
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL})
     private Address address;
     @ManyToMany(cascade = {CascadeType.ALL})
     private List<Hobby> hobbies = new ArrayList();
