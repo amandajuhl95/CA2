@@ -71,7 +71,7 @@ public class PersonFacade {
        
        List<PersonDTO> personsDTO = new ArrayList();
        
-       TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p JOIN p.address pa WHERE pa.cityInfo.city = :city", Person.class);
+       TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p JOIN p.address pa WHERE pa.cityInfo.city = :city OR pa.cityInfo.zip = :city", Person.class);
        List<Person> persons = query.setParameter("city", city).getResultList();
        
        for (Person person : persons) {
