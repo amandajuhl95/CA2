@@ -42,6 +42,7 @@ public class PersonFacade {
     public PersonDTO getPerson(int number)
     {
         EntityManager em = getEntityManager();
+        
         TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.phones ph WHERE ph.number = :number", Person.class);
         Person person = query.setParameter("number", number).getSingleResult();
         PersonDTO personDTO = new PersonDTO(person);
@@ -55,7 +56,7 @@ public class PersonFacade {
         
         List<PersonDTO> personsDTO = new ArrayList();
         
-        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p WHERE p.hobbies.name = :hobby", Person.class);
+        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.hobbies pho WHERE pho.name = :hobby", Person.class);
         List<Person> persons = query.setParameter("hobby", hobby).getResultList();
 
         for (Person person : persons) {
