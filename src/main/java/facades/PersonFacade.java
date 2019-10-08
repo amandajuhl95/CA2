@@ -65,9 +65,19 @@ public class PersonFacade {
         return personsDTO;
     }
     
-    public List<Person> getPersonsByCity(CityInfo city)
+    public List<PersonDTO> getPersonsByCity(CityInfo city)
     {
-       return new ArrayList<Person>();
+       EntityManager em = getEntityManager();
+       
+       List<PersonDTO> personsDTO = new ArrayList();
+       
+       TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p JOIN p.address pa WHERE pa.cityInfo.city = :city", Person.class);
+       List<Person> persons = query.setParameter("city", city).getResultList();
+       
+       for (Person person : persons) {
+            personsDTO.add(new PersonDTO(person));
+        }
+       return personsDTO;
     } 
     
     public int getPersonCountByHobby(String hobby)
