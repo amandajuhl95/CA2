@@ -4,6 +4,7 @@ import dto.PersonDTO;
 import entities.Address;
 import entities.CityInfo;
 import entities.Person;
+import errorhandling.ExceptionDTO;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -41,7 +42,38 @@ public class PersonFacade {
         return emf.createEntityManager();
     }
 
+    public Person addPerson(Person person) {
+        
+        EntityManager em = getEntityManager();
+        
+        try {
+            em.getTransaction().begin();
+            em.persist(person);
+            em.getTransaction().commit();
+            return person;
+        } finally {
+            em.close();
+        }
+    }
+
+    public Person deletePerson(long id) {
+        
+        EntityManager em = getEntityManager();
+        Person person;
+        
+        try {
+            em.getTransaction().begin();
+            person = em.find(Person.class, id);
+            em.remove(person);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+        return person;
+    }
+
     public PersonDTO getPerson(int number) {
+        
         EntityManager em = getEntityManager();
 
         TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.phones ph WHERE ph.number = :number", Person.class);
@@ -52,6 +84,7 @@ public class PersonFacade {
     }
 
     public List<PersonDTO> getPersonsByHobby(String hobby) {
+       
         EntityManager em = getEntityManager();
 
         List<PersonDTO> personsDTO = new ArrayList();
@@ -66,6 +99,7 @@ public class PersonFacade {
     }
 
     private CityInfo getCityInfo(String city) {
+        
         EntityManager em = getEntityManager();
 
         if (city.matches("[0-9]+")) {
@@ -107,6 +141,7 @@ public class PersonFacade {
     }
 
     public List<Integer> getZipcodes() {
+        
         EntityManager em = getEntityManager();
 
         Query query = em.createQuery("SELECT c.zip FROM CityInfo c");
@@ -115,14 +150,14 @@ public class PersonFacade {
 
     }
 
-    public List<PersonDTO> getPersonsByAdress(Address address) {
+    public List<PersonDTO> getPersonsByAdress(String street, String addinfo) {
 
         EntityManager em = getEntityManager();
 
         List<PersonDTO> personsDTO = new ArrayList();
 
-        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p WHERE p.address = :address", Person.class);
-        List<Person> persons = query.setParameter("address", address.getStreet() + " " + address.getAddinfo()).getResultList();
+        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.address a WHERE a.street = :street AND a.addinfo = :addinfo", Person.class);
+        List<Person> persons = query.setParameter("street", street).setParameter("addinfo", addinfo).getResultList();
 
         for (Person person : persons) {
             personsDTO.add(new PersonDTO(person));
