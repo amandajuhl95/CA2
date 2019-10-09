@@ -3,7 +3,9 @@ package facades;
 import dto.PersonDTO;
 import entities.Address;
 import entities.CityInfo;
+import entities.Hobby;
 import entities.Person;
+import entities.Phone;
 import errorhandling.ExceptionDTO;
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,14 +59,14 @@ public class PersonFacade {
         }
     }
 
-    public Person deletePerson(long id) {
+    public Person deletePerson(long person_id) {
 
         EntityManager em = getEntityManager();
         Person person;
 
         try {
             em.getTransaction().begin();
-            person = em.find(Person.class, id);
+            person = em.find(Person.class, person_id);
             em.remove(person);
             em.getTransaction().commit();
         } finally {
@@ -74,6 +76,7 @@ public class PersonFacade {
     }
 
     public Person editPerson(Person person) {
+
         EntityManager em = getEntityManager();
 
         try {
@@ -87,10 +90,91 @@ public class PersonFacade {
 
     }
 
-    public PersonDTO getPersonById(long id) {
-        
+    public Person addHobby(long person_id, String name, String description) {
+
         EntityManager em = getEntityManager();
+
+        Person person = em.find(Person.class, person_id);
+        Hobby hobby = new Hobby(name, description);
+        person.addHobby(hobby);
+
+        try {
+            em.getTransaction().begin();
+            em.merge(person);
+            em.persist(person);
+            em.getTransaction().commit();
+            return person;
+        } finally {
+            em.close();
+        }
+    }
+
+    public Person deleteHobby(long person_id, long hobby_id) {
+
+        EntityManager em = getEntityManager();
+
+        Person person = em.find(Person.class, person_id);
+        Hobby hobby = em.find(Hobby.class, hobby_id);
+        person.removeHobby(hobby);
+
+        try {
+            em.getTransaction().begin();
+            em.remove(hobby);
+            em.merge(person);
+            em.persist(person);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
         
+        return person;
+        
+    }
+
+    public Person addPhone(long person_id, int number, String description) {
+
+        EntityManager em = getEntityManager();
+
+        Person person = em.find(Person.class, person_id);
+        Phone phone = new Phone(number, description);
+        person.addPhone(phone);
+
+        try {
+            em.getTransaction().begin();
+            em.merge(person);
+            em.persist(person);
+            em.getTransaction().commit();
+            return person;
+        } finally {
+            em.close();
+        }
+    }
+
+    public Person deletePhone(long person_id, long phone_id) {
+
+        EntityManager em = getEntityManager();
+
+        Person person = em.find(Person.class, person_id);
+        Phone phone = em.find(Phone.class, phone_id);
+        person.removePhone(phone);
+
+        try {
+            em.getTransaction().begin();
+            em.remove(phone);
+            em.merge(person);
+            em.persist(person);
+            em.getTransaction().commit();
+            
+        } finally {
+            em.close();
+        }
+        return person;
+    }
+    
+    public PersonDTO getPersonById(long id) {
+
+        EntityManager em = getEntityManager();
+
         try {
             Person person = em.find(Person.class, id);
             PersonDTO personDTO = new PersonDTO(person);
