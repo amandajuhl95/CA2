@@ -232,13 +232,16 @@ public class PersonFacadeTest {
     @Test
     public void testDeletePerson() {
         System.out.println("deletePerson");
-        long person_id = 0L;
-        PersonFacade instance = null;
-        Person expResult = null;
-        Person result = instance.deletePerson(person_id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+          
+        int personsbefore = facade.getAllPersons().size();
+        
+        
+        facade.deletePerson(p1.getId());
+        
+        int personsafter = facade.getAllPersons().size();
+
+        assertTrue(personsbefore > personsafter);
+        
     }
 
     /**
@@ -266,6 +269,7 @@ public class PersonFacadeTest {
 
         int hobbiesbefore = p1.getHobbies().size();
         p1 = facade.addHobby(p1.getId(), "Handball", "A team sport. The team with the highest score wins");
+        p2 = facade.addHobby(p2.getId(), "Handball", "A team sport. The team with the highest score wins");
         int hobbiesafter = p1.getHobbies().size();
         
         assertTrue(hobbiesbefore < hobbiesafter);
