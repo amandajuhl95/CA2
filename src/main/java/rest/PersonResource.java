@@ -1,7 +1,6 @@
 package rest;
 
 import dto.PersonDTO;
-import entities.Person;
 import utils.EMF_Creator;
 import facades.PersonFacade;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
