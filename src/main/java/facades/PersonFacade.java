@@ -110,18 +110,26 @@ public class PersonFacade {
     }
 
     public Hobby deleteHobby(long person_id, long hobby_id) {
-        
+
         EntityManager em = getEntityManager();
-        
+
         Person person = em.find(Person.class, person_id);
         Hobby hobby = em.find(Hobby.class, hobby_id);
         person.removeHobby(hobby);
-        
-        return hobby;
+
+        try {
+            em.getTransaction().begin();
+            em.remove(hobby);
+            em.getTransaction().commit();
+            return hobby;
+        } finally {
+            em.close();
+        }
+
     }
 
     public Person addPhone(long person_id, int number, String description) {
-        
+
         EntityManager em = getEntityManager();
 
         Person person = em.find(Person.class, person_id);
@@ -140,14 +148,21 @@ public class PersonFacade {
     }
 
     public Phone deletePhone(long person_id, long phone_id) {
-        
+
         EntityManager em = getEntityManager();
-        
+
         Person person = em.find(Person.class, person_id);
         Phone phone = em.find(Phone.class, phone_id);
         person.removePhone(phone);
-        
-        return phone;
+
+        try {
+            em.getTransaction().begin();
+            em.remove(phone);
+            em.getTransaction().commit();
+            return phone;
+        } finally {
+            em.close();
+        }
     }
 
     public PersonDTO getPersonById(long id) {
