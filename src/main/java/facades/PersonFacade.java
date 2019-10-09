@@ -44,9 +44,9 @@ public class PersonFacade {
     }
 
     public Person addPerson(Person person) {
-        
+
         EntityManager em = getEntityManager();
-        
+
         try {
             em.getTransaction().begin();
             em.persist(person);
@@ -58,10 +58,10 @@ public class PersonFacade {
     }
 
     public Person deletePerson(long id) {
-        
+
         EntityManager em = getEntityManager();
         Person person;
-        
+
         try {
             em.getTransaction().begin();
             person = em.find(Person.class, id);
@@ -72,10 +72,10 @@ public class PersonFacade {
         }
         return person;
     }
-    
-    public Person editPerson(Person person){
+
+    public Person editPerson(Person person) {
         EntityManager em = getEntityManager();
-        
+
         try {
             em.getTransaction().begin();
             em.merge(person);
@@ -87,8 +87,21 @@ public class PersonFacade {
 
     }
 
-    public PersonDTO getPerson(int number) {
+    public PersonDTO getPersonById(long id) {
         
+        EntityManager em = getEntityManager();
+        
+        try {
+            Person person = em.find(Person.class, id);
+            PersonDTO personDTO = new PersonDTO(person);
+            return personDTO;
+        } finally {
+            em.close();
+        }
+    }
+
+    public PersonDTO getPerson(int number) {
+
         EntityManager em = getEntityManager();
 
         TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.phones ph WHERE ph.number = :number", Person.class);
@@ -99,7 +112,7 @@ public class PersonFacade {
     }
 
     public List<PersonDTO> getPersonsByHobby(String hobby) {
-       
+
         EntityManager em = getEntityManager();
 
         List<PersonDTO> personsDTO = new ArrayList();
@@ -114,7 +127,7 @@ public class PersonFacade {
     }
 
     private CityInfo getCityInfo(String city) {
-        
+
         EntityManager em = getEntityManager();
 
         if (city.matches("[0-9]+")) {
@@ -157,7 +170,7 @@ public class PersonFacade {
     }
 
     public List<Integer> getZipcodes() {
-        
+
         EntityManager em = getEntityManager();
 
         Query query = em.createQuery("SELECT c.zip FROM CityInfo c");
