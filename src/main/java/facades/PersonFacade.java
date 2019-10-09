@@ -6,6 +6,7 @@ import entities.CityInfo;
 import entities.Person;
 import errorhandling.ExceptionDTO;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -71,6 +72,20 @@ public class PersonFacade {
         }
         return person;
     }
+    
+    public Person editPerson(Person person){
+        EntityManager em = getEntityManager();
+        
+        try {
+            em.getTransaction().begin();
+            em.merge(person);
+            em.getTransaction().commit();
+            return person;
+        } finally {
+            em.close();
+        }
+
+    }
 
     public PersonDTO getPerson(int number) {
         
@@ -103,8 +118,9 @@ public class PersonFacade {
         EntityManager em = getEntityManager();
 
         if (city.matches("[0-9]+")) {
+            int zip = Integer.parseInt(city);
             TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c WHERE c.zip = :zip", CityInfo.class);
-            CityInfo cityInfo = query.setParameter("zip", city).getSingleResult();
+            CityInfo cityInfo = query.setParameter("zip", zip).getSingleResult();
             return cityInfo;
         } else {
             TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c WHERE c.city = :city", CityInfo.class);
