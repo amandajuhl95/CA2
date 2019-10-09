@@ -1,14 +1,11 @@
 package facades;
 
 import dto.PersonDTO;
-import entities.Address;
 import entities.CityInfo;
 import entities.Hobby;
 import entities.Person;
 import entities.Phone;
-import errorhandling.ExceptionDTO;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -93,10 +90,22 @@ public class PersonFacade {
     public Person addHobby(long person_id, String name, String description) {
 
         EntityManager em = getEntityManager();
+        
+        boolean found = false;
 
         Person person = em.find(Person.class, person_id);
-        Hobby hobby = new Hobby(name, description);
-        person.addHobby(hobby);
+        for (Hobby hobby : getAllHobbies()) {
+            if(hobby.getName().equals(name))
+            {
+                person.addHobby(hobby);
+                found = true;
+            }
+        }
+        if(!found)
+        {
+            Hobby add = new Hobby(name, description);
+            person.addHobby(add);
+        }
 
         try {
             em.getTransaction().begin();
@@ -107,6 +116,15 @@ public class PersonFacade {
         } finally {
             em.close();
         }
+    }
+    
+    private List<Hobby> getAllHobbies()
+    {
+        EntityManager em = getEntityManager();
+        
+        TypedQuery<Hobby> query = em.createQuery("SELECT h FROM Hobby h", Hobby.class);
+        return query.getResultList();
+        
     }
 
     public Person deleteHobby(long person_id, long hobby_id) {
@@ -125,9 +143,9 @@ public class PersonFacade {
         } finally {
             em.close();
         }
-        
+
         return person;
-        
+
     }
 
     public Person addPhone(long person_id, int number, String description) {
@@ -163,13 +181,13 @@ public class PersonFacade {
             em.merge(person);
             em.persist(person);
             em.getTransaction().commit();
-            
+
         } finally {
             em.close();
         }
         return person;
     }
-    
+
     public PersonDTO getPersonById(long id) {
 
         EntityManager em = getEntityManager();
@@ -193,20 +211,19 @@ public class PersonFacade {
 
         return personDTO;
     }
-    
-    public List<PersonDTO> getAllPersons()
-    {
+
+    public List<PersonDTO> getAllPersons() {
         EntityManager em = getEntityManager();
-        
+
         List<PersonDTO> personsDTO = new ArrayList();
-        
+
         TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p", Person.class);
         List<Person> persons = query.getResultList();
-        
+
         for (Person person : persons) {
             personsDTO.add(new PersonDTO(person));
         }
-        
+
         return personsDTO;
     }
 

@@ -269,7 +269,6 @@ public class PersonFacadeTest {
 
         int hobbiesbefore = p1.getHobbies().size();
         p1 = facade.addHobby(p1.getId(), "Handball", "A team sport. The team with the highest score wins");
-        p2 = facade.addHobby(p2.getId(), "Handball", "A team sport. The team with the highest score wins");
         int hobbiesafter = p1.getHobbies().size();
         
         assertTrue(hobbiesbefore < hobbiesafter);
