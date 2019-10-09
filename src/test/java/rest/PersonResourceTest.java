@@ -11,6 +11,7 @@ import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
 import io.restassured.parsing.Parser;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -105,7 +106,7 @@ public class PersonResourceTest {
         address2.addPerson(p2);
         hoppy.addPerson(p2);
         hoppy2.addPerson(p2);
-        phone2.setPerson(p2);         
+        phone2.setPerson(p2);
 
         try {
             em.getTransaction().begin();
@@ -126,6 +127,28 @@ public class PersonResourceTest {
 
     }
 
+    private List<String> hobbyToString(List<Hobby> hobbies) {
+        List<String> hobbyNames = new ArrayList();
+
+        for (Hobby hobby : hobbies) {
+
+            hobbyNames.add(hobby.getName());
+        }
+
+        return hobbyNames;
+    }
+
+    private List<String> phoneToString(List<Phone> phones) {
+        List<String> phoneNumbers = new ArrayList();
+
+        for (Phone phone : phones) {
+
+            phoneNumbers.add(String.valueOf(phone.getNumber()));
+        }
+
+        return phoneNumbers;
+    }
+
     @Test
     public void testServerIsUp() {
         System.out.println("Testing is server UP");
@@ -138,12 +161,12 @@ public class PersonResourceTest {
     @Test
     public void testGetPerson() {
         System.out.println("getPerson");
-     given()
+        given()
                 .contentType("application/json")
                 .get("/person/" + p1.getPhones().get(0).getNumber()).then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
-                .body( "firstname", equalTo(p1.getFirstName()),
+                .body("firstname", equalTo(p1.getFirstName()),
                         "lastname", equalTo(p1.getLastName()),
                         "hobbies.hobby", hasItems(p1.getHobbies().get(0).getName()));
     }
@@ -151,54 +174,54 @@ public class PersonResourceTest {
     /**
      * Test of getPersonsByHobby method, of class PersonResource.
      */
-    @org.junit.Test
+    @Test
     public void testGetPersonsByHobby() {
         System.out.println("getPersonsByHobby");
-         given()
+        given()
                 .contentType("application/json")
-                .get("/person/persons/programming").then()
+                .get("/person/hobby/programming").then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
-                .body("firstname", hasItems(p1.getFirstName(), 
+                .body("firstname", hasItems(p1.getFirstName(),
                         p2.getFirstName()),
-                        "lastname", hasItems(p1.getFirstName(), 
-                        p2.getFirstName()),
-                        "phones.phone", hasItems(p1.getPhones().get(0).getNumber(), 
-                        p2.getPhones().get(0).getNumber()));
+                        "lastname", hasItems(p1.getLastName(),
+                                p2.getLastName()));
     }
 
     /**
      * Test of getPersonsByCity method, of class PersonResource.
      */
-    @org.junit.Test
-    public void testGetPersonsByCity() {
-        System.out.println("getPersonsByCity");
-         given()
-                .contentType("application/json")
-                .get("/Person/city/{city}").then()
-                .assertThat()
-                .statusCode(HttpStatus.OK_200.getStatusCode())
-                .body("hobby", hasItems("SomeHobby", 
-                        "SomeHobby"),
-                        "firstName", equalTo("name"),
-                        "lastName", equalTo("name"));
-    }
+//    @Test
+//    public void testGetPersonsByCity() {
+//        System.out.println("getPersonsByCity");
+//        given()
+//                .contentType("application/json")
+//                .get("/person/city/" + p1.getAddress().getCityInfo().getZip()).then()
+//                .assertThat()
+//                .statusCode(HttpStatus.OK_200.getStatusCode())
+//                .body("firstname", hasItems(p1.getFirstName(),
+//                        p2.getFirstName()),
+//                        "lastname", hasItems(p1.getLastName(),
+//                                p2.getLastName()),
+//                        "hobbies.hobby", hasItems(hobbyToString(p1.getHobbies()),
+//                                hobbyToString(p2.getHobbies())));
+//    }
 
 //    /**
 //     * Test of getNumberOfPersonsWithHobby method, of class PersonResource.
 //     */
-//    @org.junit.Test
-//    public void testGetNumberOfPersonsWithHobby() {
-//        System.out.println("getNumberOfPersonsWithHobby");
+//    @Test
+//    public void testGetPersonCountByHobby() {
+//        System.out.println("getPersonCountByHobby");
 //           given()
 //                .contentType("application/json")
-//                .get("/Person/hobby/count/{hobby}").then()
+//                .get("/person/count/programming").then()
 //                .assertThat()
 //                .statusCode(HttpStatus.OK_200.getStatusCode())
-//                .body("hobby", equalTo("NUMBER OF PEOPLE WITH HOBBY"));
+//                .body("count", equalTo(2));
 //    }
-//    
-//
+    
+
 //    /**
 //     * Test of AllZipCodesInDenmark method, of class PersonResource.
 //     */

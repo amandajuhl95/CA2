@@ -86,7 +86,7 @@ public class PersonResource {
     }
 
     @GET
-    @Path("/persons/{hobby}")
+    @Path("/hobby/{hobby}")
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Get all persons info by hobby",
             tags = {"Person"},
@@ -132,7 +132,7 @@ public class PersonResource {
     
     //count of persons with given hobby
       @GET
-    @Path("/hobby/count/{hobby}")
+    @Path("/count/{hobby}")
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "number of persons with a given hobby",
             tags = {"Person"},
@@ -142,13 +142,13 @@ public class PersonResource {
                 @ApiResponse(responseCode = "200", description = "the number of people with that hobby"),
                 @ApiResponse(responseCode = "400", description = "List of Persons not found")})
 
-    public long getNumberOfPersonsWithHobby(@PathParam("hobby") String hobby) {
+    public String getPersonCountByHobby(@PathParam("hobby") String hobby) {
         
          if (hobby== null  || "".equals(hobby)){
             throw new WebApplicationException("Hobby must be defined",400);
         }
          
-        return FACADE.getPersonCountByHobby(hobby);
+        return "{\"count\" : \"" + FACADE.getPersonCountByHobby(hobby) + "\"}";
     }
 //    
 //       @GET
