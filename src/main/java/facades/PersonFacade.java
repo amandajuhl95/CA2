@@ -119,7 +119,6 @@ public class PersonFacade {
 
         try {
             em.getTransaction().begin();
-            em.remove(hobby);
             em.merge(person);
             em.persist(person);
             em.getTransaction().commit();
