@@ -109,7 +109,7 @@ public class PersonFacade {
         }
     }
 
-    public Hobby deleteHobby(long person_id, long hobby_id) {
+    public Person deleteHobby(long person_id, long hobby_id) {
 
         EntityManager em = getEntityManager();
 
@@ -123,10 +123,11 @@ public class PersonFacade {
             em.merge(person);
             em.persist(person);
             em.getTransaction().commit();
-            return hobby;
         } finally {
             em.close();
         }
+        
+        return person;
         
     }
 
@@ -149,7 +150,7 @@ public class PersonFacade {
         }
     }
 
-    public Phone deletePhone(long person_id, long phone_id) {
+    public Person deletePhone(long person_id, long phone_id) {
 
         EntityManager em = getEntityManager();
 
@@ -163,10 +164,11 @@ public class PersonFacade {
             em.merge(person);
             em.persist(person);
             em.getTransaction().commit();
-            return phone;
+            
         } finally {
             em.close();
         }
+        return person;
     }
     
     public PersonDTO getPersonById(long id) {
