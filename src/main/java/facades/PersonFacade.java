@@ -120,12 +120,14 @@ public class PersonFacade {
         try {
             em.getTransaction().begin();
             em.remove(hobby);
+            em.merge(person);
+            em.persist(person);
             em.getTransaction().commit();
             return hobby;
         } finally {
             em.close();
         }
-
+        
     }
 
     public Person addPhone(long person_id, int number, String description) {
@@ -158,13 +160,15 @@ public class PersonFacade {
         try {
             em.getTransaction().begin();
             em.remove(phone);
+            em.merge(person);
+            em.persist(person);
             em.getTransaction().commit();
             return phone;
         } finally {
             em.close();
         }
     }
-
+    
     public PersonDTO getPersonById(long id) {
 
         EntityManager em = getEntityManager();
