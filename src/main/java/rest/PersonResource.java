@@ -142,7 +142,7 @@ public class PersonResource {
                 @ApiResponse(responseCode = "200", description = "the number of people with that hobby"),
                 @ApiResponse(responseCode = "400", description = "List of Persons not found")})
 
-    public int getNumberOfPersonsWithHobby(@PathParam("hobby") String hobby) {
+    public long getNumberOfPersonsWithHobby(@PathParam("hobby") String hobby) {
         
          if (hobby== null  || "".equals(hobby)){
             throw new WebApplicationException("Hobby must be defined",400);
