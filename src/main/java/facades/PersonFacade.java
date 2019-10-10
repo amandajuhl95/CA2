@@ -205,12 +205,12 @@ public class PersonFacade {
         
     }
 
-    public Person deleteHobby(long person_id, String hobby_name) {
+    public Person deleteHobby(Long person_id, Long hobby_id) {
 
         EntityManager em = getEntityManager();
 
         Person person = em.find(Person.class, person_id);
-        Hobby hobby = em.find(Hobby.class, hobby_name);
+        Hobby hobby = em.find(Hobby.class, hobby_id);
         person.removeHobby(hobby);
 
         try {
@@ -245,12 +245,12 @@ public class PersonFacade {
         }
     }
 
-    public Person deletePhone(long person_id, int number) {
+    public Person deletePhone(long person_id, Long phone_id) {
 
         EntityManager em = getEntityManager();
 
         Person person = em.find(Person.class, person_id);
-        Phone phone = em.find(Phone.class, number);
+        Phone phone = em.find(Phone.class, phone_id);
         person.removePhone(phone);
 
         try {
