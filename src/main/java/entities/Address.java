@@ -64,6 +64,7 @@ public class Address implements Serializable {
 
     public void setCityInfo(CityInfo cityInfo) {
         this.cityInfo = cityInfo;
+        cityInfo.addAddress(this);
     }
 
     public void setStreet(String street) {
@@ -115,9 +116,9 @@ public class Address implements Serializable {
         if (!Objects.equals(this.addinfo, other.addinfo)) {
             return false;
         }
-//        if (!Objects.equals(this.cityInfo, other.cityInfo)) {
-//            return false;
-//        }
+        if (!Objects.equals(this.cityInfo, other.cityInfo)) {
+            return false;
+        }
         return true;
     }
     

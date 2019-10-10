@@ -33,6 +33,12 @@ public class PersonFacadeTest {
     private Person p1;
     private Person p2;
     private CityInfo cityInfo;
+    private Hobby hobby2;
+    private Hobby hobby1;
+    private Phone phone1;
+    private Phone phone2;
+    private Address address1;
+    private Address address2;
 
     public PersonFacadeTest() {
     }
@@ -57,15 +63,14 @@ public class PersonFacadeTest {
         
         cityInfo = new CityInfo(2200, "testTown");
         
-        Address address1 = new Address("streetname", "4 tv", cityInfo);
+        address1 = new Address("streetname", "4 tv", cityInfo);
+        address2 = new Address("gadevejen", "1 th", cityInfo);
         p1 = new Person("jim@gmail.com", "jim", "theMan", address1);
-        Phone phone1 = new Phone(22112211, "workPhone");
-        Hobby hobby1 = new Hobby("programming", "the future of mankind is programming, also good for making a blog about your dog pictures");
-       
-        Address address2 = new Address("gadevejen", "1 th", cityInfo);
         p2 = new Person("bill@gmail.com", "bill", "LastName", address2);
-        Phone phone2 = new Phone(99889988, "privatePhone");
-        Hobby hobby2 = new Hobby("jumping", "super fun and easy");
+        phone1 = new Phone(22112211, "workPhone");
+        phone2 = new Phone(99889988, "privatePhone");
+        hobby1 = new Hobby("programming", "the future of mankind is programming, also good for making a blog about your dog pictures");
+        hobby2 = new Hobby("jumping", "super fun and easy");
         
         cityInfo.addAddress(address1);
         p1.addHobby(hobby1);
@@ -212,7 +217,7 @@ public class PersonFacadeTest {
         int personsbefore = facade.getAllPersons().size();
         //CityInfo info = new CityInfo(3223, "thetesttown");
       
-        facade.addPerson("joe", "ordenary", "test@testmail.dk", "testersvej", "32", cityInfo.getCity(), cityInfo.getZip());
+        facade.addPerson("joe", "ordenary", "test@testmail.dk", address1.getStreet(), address1.getAddinfo(), cityInfo.getCity(), cityInfo.getZip());
         
         int personsafter = facade.getAllPersons().size();
 
@@ -278,7 +283,7 @@ public class PersonFacadeTest {
         System.out.println("deleteHobby");
 
         int hobbiesbefore = p1.getHobbies().size();
-        p1 = facade.deleteHobby(p1.getId(), "programming");
+        p1 = facade.deleteHobby(p1.getId(), hobby1.getId());
         int hobbiesafter = p1.getHobbies().size();
         assertTrue(hobbiesbefore > hobbiesafter);
     }
@@ -307,7 +312,7 @@ public class PersonFacadeTest {
         System.out.println("deletePhone");
 
         int phonesbefore = p2.getPhones().size();
-        p2 = facade.deletePhone(p2.getId(), 99889988);
+        p2 = facade.deletePhone(p2.getId(), phone2.getId());
         int phonesafter = p2.getPhones().size();
         assertTrue(phonesbefore > phonesafter);
     }

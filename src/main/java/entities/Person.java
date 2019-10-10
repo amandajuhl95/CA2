@@ -41,7 +41,6 @@ public class Person implements Serializable {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
-        this.address.addPerson(this);
     }
     
     public Long getId() {
@@ -82,6 +81,7 @@ public class Person implements Serializable {
 
     public void setAddress(Address address) {
         this.address = address;
+        address.addPerson(this);
     }
 
     public Set<Hobby> getHobbies() {

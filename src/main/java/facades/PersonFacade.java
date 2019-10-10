@@ -62,14 +62,21 @@ public class PersonFacade {
 //            address = checkAddress;
 //        } else
 //        {
-            cityInfo.addAddress(address);
 //        }
 
         Person person = new Person(email, firstName, lastName, address);
         try {
             em.getTransaction().begin();
+            
+            CityInfo mergedCity = em.merge(cityInfo);
+            Address mergedAddress = em.merge(address);
+
+            address.setCityInfo(mergedCity);
+            person.setAddress(mergedAddress);
+            
             em.merge(person);
             em.persist(person);
+            
             em.getTransaction().commit();
         } finally {
             em.close();
