@@ -44,18 +44,18 @@ public class PersonFacade {
         return emf.createEntityManager();
     }
 
-    public PersonDTO addPerson(String firstName, String lastName, String email, String street, String addinfo, String city, int zip) {
+    public PersonDTO addPerson(PersonDTO p) {
 
         EntityManager em = getEntityManager();
         
-        CityInfo cityInfo = new CityInfo(zip, city);
+        CityInfo cityInfo = new CityInfo(p.getZip(), p.getCity());
 //        CityInfo checkCityInfo = checkAllCityInfo(cityInfo);
 //        if(checkCityInfo != null)
 //        {
 //            cityInfo = checkCityInfo; 
 //        }
 //        
-        Address address = new Address(street, addinfo, cityInfo);
+        Address address = new Address(p.getStreet(), p.getAddInfo(), cityInfo);
 //        Address checkAddress = checkAllAddresses(address);
 //        if(checkAddress!= null)
 //        {
@@ -64,7 +64,7 @@ public class PersonFacade {
 //        {
 //        }
 
-        Person person = new Person(email, firstName, lastName, address);
+        Person person = new Person(p.getEmail(), p.getFirstname(), p.getLastname(), address);
         try {
             em.getTransaction().begin();
             
@@ -147,23 +147,36 @@ public class PersonFacade {
         }
     }
 
-    public PersonDTO editPerson(Long person_id, String firstname, String lastname, String email, String street, String addInfo, String city, int zip) {
+    public PersonDTO editPerson(PersonDTO p) {
 
         EntityManager em = getEntityManager();
 
-        Person person = em.find(Person.class, person_id);
-        person.setFirstName(firstname);
-        person.setLastName(lastname);
-        person.setEmail(email);
-        CityInfo info = new CityInfo(zip, city);
-        Address newAddress = new Address(street, addInfo, info);
-        person.setAddress(newAddress);
-       
+        Person person = em.find(Person.class, p.getId());
+        person.setFirstName(p.getFirstname());
+        person.setLastName(p.getLastname());
+        person.setEmail(p.getEmail());
+        Address oldAddress = person.getAddress();
+        CityInfo info = new CityInfo(p.getZip(), p.getCity());
+        Address newAddress = new Address(p.getStreet(), p.getAddInfo(), info);
         
+//        int numOfPeople = getPersonsByAddress(oldAddress.getStreet(), oldAddress.getAddinfo()).size();
+//        if(numOfPeople == 1)
+//            {
+//                em.remove(p.getStreet()));
+//            }
+       
         try {
             em.getTransaction().begin();
+            
+            CityInfo mergedCity = em.merge(info);
+            Address mergedAddress = em.merge(newAddress);
+
+            newAddress.setCityInfo(mergedCity);
+            person.setAddress(mergedAddress);
+            
             em.merge(person);
             em.persist(person);
+            
             em.getTransaction().commit();
             return new PersonDTO(person);
         } finally {

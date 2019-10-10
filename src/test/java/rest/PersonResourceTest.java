@@ -22,11 +22,7 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
-import org.junit.After;
 import org.junit.jupiter.api.AfterAll;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -69,13 +65,13 @@ public class PersonResourceTest {
     @AfterAll
     public static void closeTestServer() {
         //System.in.read();
-        //Don't forget this, if you called its counterpart in @BeforeAll
+        // Don't forget this, if you called its counterpart in @BeforeAll
         EMF_Creator.endREST_TestWithDB();
         httpServer.shutdownNow();
     }
 
-    // Setup the DataBase (used by the test-server and this test) in a known state BEFORE EACH TEST
-    //TODO -- Make sure to change the EntityClass used below to use YOUR OWN (renamed) Entity class
+    //Setup the DataBase (used by the test-server and this test) in a known state BEFORE EACH TEST
+    // TODO -- Make sure to change the EntityClass used below to use YOUR OWN (renamed) Entity class
     @BeforeEach
     public void setUp() {
 
@@ -83,29 +79,29 @@ public class PersonResourceTest {
         CityInfo cityInfo = new CityInfo(2200, "testTown");
         Address address = new Address("streetname", "4 tv", cityInfo);
         Phone phone = new Phone(22112211, "workPhone");
-        Hobby hoppy = new Hobby("programming", "the future of mankind is programming, also good for making a blog about your dog pictures");
+        Hobby hobby = new Hobby("programming", "the future of mankind is programming, also good for making a blog about your dog pictures");
         p1 = new Person("jim@gmail.com", "jim", "theMan", address);
 
         Address address2 = new Address("gadevejen", "1 th", cityInfo);
         Phone phone2 = new Phone(99889988, "privatePhone");
-        Hobby hoppy2 = new Hobby("jumping", "super fun and easy");
+        Hobby hobby2 = new Hobby("jumping", "super fun and easy");
         p2 = new Person("bill@gmail.com", "bill", "LastName", address2);
 
         cityInfo.addAddress(address);
-        p1.addHobby(hoppy);
-        p1.addHobby(hoppy2);
+        p1.addHobby(hobby);
+        p1.addHobby(hobby2);
         p1.addPhone(phone);
         address.addPerson(p1);
-        hoppy.addPerson(p1);
+        hobby.addPerson(p1);
         phone.setPerson(p1);
 
         cityInfo.addAddress(address2);
-        p2.addHobby(hoppy2);
-        p2.addHobby(hoppy);
+        p2.addHobby(hobby2);
+        p2.addHobby(hobby);
         p2.addPhone(phone2);
         address2.addPerson(p2);
-        hoppy.addPerson(p2);
-        hoppy2.addPerson(p2);
+        hobby.addPerson(p2);
+        hobby2.addPerson(p2);
         phone2.setPerson(p2);
 
         try {
@@ -206,7 +202,7 @@ public class PersonResourceTest {
 //                        "hobbies.hobby", hasItems(hobbyToString(p1.getHobbies()),
 //                                hobbyToString(p2.getHobbies())));
 //    }
-//
+
 //    /**
 //     * Test of getNumberOfPersonsWithHobby method, of class PersonResource.
 //     */
@@ -221,11 +217,11 @@ public class PersonResourceTest {
 //                .body(equalTo((int) 2));
 //    }
     
-
+//
 //    /**
 //     * Test of AllZipCodesInDenmark method, of class PersonResource.
 //     */
-//    @org.junit.Test
+//    @Test
 //    public void testAllZipCodesInDenmark() {
 //        System.out.println("AllZipCodesInDenmark");
 //         given()
@@ -241,7 +237,7 @@ public class PersonResourceTest {
 //    /**
 //     * Test of DeleteUser method, of class PersonResource.
 //     */
-//    @org.junit.Test
+//    @Test
 //    public void testDeleteUser() {
 //        System.out.println("DeleteUser");
 //        String id = "";
@@ -252,11 +248,11 @@ public class PersonResourceTest {
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
-//
+
 //    /**
 //     * Test of EditUser method, of class PersonResource.
 //     */
-//    @org.junit.Test
+//    @Test
 //    public void testEditUser() {
 //        System.out.println("EditUser");
 //        PersonDTO person = null;
@@ -267,19 +263,26 @@ public class PersonResourceTest {
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
-//
-//    /**
-//     * Test of addPerson method, of class PersonResource.
-//     */
-//    @org.junit.Test
-//    public void testAddPerson() {
-//        System.out.println("addPerson");
-//        PersonDTO person = null;
-//        PersonResource instance = new PersonResource();
-//        PersonDTO expResult = null;
-//        PersonDTO result = instance.addPerson(person);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+
+    /**
+     * Test of addPerson method, of class PersonResource.
+     */
+    @Test
+    public void testAddPerson() {
+        String payload = "{\"firstname\": \"Test\","
+                + "\"lastname\": \"Testen\","
+                + "\"email\": \"bum@hotmail.com\","
+                + "\"street\": \"Testvej\","
+                + "\"addInfo\": \"1 tv\","
+                + "\"city\": \"Testby\","
+                + "\"zip\": \"2230\"}";
+
+        given().contentType("application/json")
+                .body(payload)
+                .post("/person/").then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("firstname", equalTo("Test"), "lastname", equalTo("Testen"), "email", equalTo("bum@hotmail.com"), "street", equalTo("Testvej"), "addInfo", equalTo("1 tv"), "city", equalTo("Testby"));
+    
+    }
 }

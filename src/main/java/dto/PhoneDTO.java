@@ -21,6 +21,11 @@ public class PhoneDTO {
         this.description = phone.getDescription();
     }
 
+    public PhoneDTO(int phone, String description) {
+        this.phone = phone;
+        this.description = description;
+    }
+
     public PhoneDTO() {
     }
 

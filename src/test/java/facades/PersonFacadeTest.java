@@ -215,10 +215,8 @@ public class PersonFacadeTest {
         System.out.println("addPerson");
       
         int personsbefore = facade.getAllPersons().size();
-        //CityInfo info = new CityInfo(3223, "thetesttown");
-      
-        facade.addPerson("joe", "ordenary", "test@testmail.dk", address1.getStreet(), address1.getAddinfo(), cityInfo.getCity(), cityInfo.getZip());
-        
+        PersonDTO p = new PersonDTO("joe", "ordenary", "test@testmail.dk", address1.getStreet(), address1.getAddinfo(), String.valueOf(cityInfo.getZip()), cityInfo.getCity());
+        facade.addPerson(p);
         int personsafter = facade.getAllPersons().size();
 
         assertTrue(personsbefore < personsafter);
@@ -244,20 +242,24 @@ public class PersonFacadeTest {
         
     }
 
-//    /**
-//     * Test of editPerson method, of class PersonFacade.
-//     */
-//    @Test
-//    public void testEditPerson() {
-//        System.out.println("editPerson");
-//        Person person = null;
-//        PersonFacade instance = null;
-//        Person expResult = null;
-//        Person result = instance.editPerson(person);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    /**
+     * Test of editPerson method, of class PersonFacade.
+     */
+    @Test
+    public void testEditPerson() {
+        System.out.println("editPerson");
+       
+        PersonDTO person = new PersonDTO("Bob", p1.getLastName(), p1.getEmail(), "Bøllevej", "6", String.valueOf(cityInfo.getZip()), cityInfo.getCity());
+        person.setId(p1.getId());
+        
+        facade.editPerson(person);
+        person = facade.getPersonById(p1.getId());
+        
+        assertEquals("Bob", person.getFirstname());
+        assertEquals("jim@gmail.com", person.getEmail());
+        assertEquals("Bøllevej", person.getStreet());
+        
+    }
 
     /**
      * Test of addHobby method, of class PersonFacade.

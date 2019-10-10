@@ -1,5 +1,7 @@
 package rest;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dto.PersonDTO;
 import utils.EMF_Creator;
 import facades.PersonFacade;
@@ -56,6 +58,7 @@ public class PersonResource {
 
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory(EMF_Creator.DbSelector.DEV, EMF_Creator.Strategy.CREATE);
     private static final PersonFacade FACADE = PersonFacade.getFacadeExample(EMF);
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
@@ -105,7 +108,7 @@ public class PersonResource {
         List<PersonDTO> persons = FACADE.getPersonsByHobby(hobby);
         return persons;
     }
-    
+
     //get all persons from a specific city
     @GET
     @Path("/city/{city}")
@@ -119,18 +122,18 @@ public class PersonResource {
                 @ApiResponse(responseCode = "400", description = "List of Persons not found")})
 
     public List<PersonDTO> getPersonsByCity(@PathParam("city") String city) {
-        
-         if (city== null  || "".equals(city)){
-             
-            throw new WebApplicationException("City must be defined",400);
+
+        if (city == null || "".equals(city)) {
+
+            throw new WebApplicationException("City must be defined", 400);
         }
-         
+
         List<PersonDTO> persons = FACADE.getPersonsByCity(city);
         return persons;
     }
-    
+
     //count of persons with given hobby
-      @GET
+    @GET
     @Path("/count/{hobby}")
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "number of persons with a given hobby",
@@ -142,15 +145,15 @@ public class PersonResource {
                 @ApiResponse(responseCode = "400", description = "List of Persons not found")})
 
     public int getPersonCountByHobby(@PathParam("hobby") String hobby) {
-        
-         if (hobby== null  || "".equals(hobby)){
-            throw new WebApplicationException("Hobby must be defined",400);
+
+        if (hobby == null || "".equals(hobby)) {
+            throw new WebApplicationException("Hobby must be defined", 400);
         }
-         
+
         return FACADE.getPersonCountByHobby(hobby);
     }
-    
-       @GET
+
+    @GET
     @Path("/zipcodes")
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "a list of all zipcodes in Denmark",
@@ -162,10 +165,10 @@ public class PersonResource {
                 @ApiResponse(responseCode = "400", description = "List of zipcodes not found")})
 
     public List<Integer> AllZipCodesInDenmark() {
-        
+
         return FACADE.getZipcodes();
     }
-    
+
     @DELETE
     @Path("/{id}")
     @Produces({MediaType.APPLICATION_JSON})
@@ -178,17 +181,17 @@ public class PersonResource {
                 @ApiResponse(responseCode = "400", description = "wrong id passed")})
 
     public String DeleteUser(@PathParam("id") String id) {
-     
-          if (id == null  ||id.isEmpty()){
-              
-            throw new WebApplicationException("Id not passed correctly",400);
+
+        if (id == null || id.isEmpty()) {
+
+            throw new WebApplicationException("Id not passed correctly", 400);
         }
-          
+
         FACADE.deletePerson(Long.parseLong(id));
-        
+
         return "Person has been deleted";
     }
-    
+
 //       @PUT
 //    @Path("/{id}")
 //    @Produces({MediaType.APPLICATION_JSON})
@@ -244,53 +247,55 @@ public class PersonResource {
 //       
 //        
 //    }
-    
-//    @POST
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Operation(summary = "Get Person info by ID",tags = {"Person"},
-//            responses = {
-//                    @ApiResponse(responseCode = "200", description = "The Newly created Person"),                       
-//                    @ApiResponse(responseCode = "400", description = "Not all arguments provided with the body")
-//            })
-//    
-//    public PersonDTO addPerson(String firstname, String lastname, String email, String street, String addInfo, String city, String zip){
-//        
-//        if(firstname == null || firstname.isEmpty() || firstname.contains("[0-9]+") || firstname.length() < 2){
-//            
-//            throw new WebApplicationException("Firstname must be 2 characters",400);
-//        }
-//        
-//        if(lastname == null || lastname.isEmpty() || lastname.contains("[0-9]+") || lastname.length() < 2){
-//            
-//            throw new WebApplicationException("Lastname must be 2 characters",400);
-//        }
-//        if(email == null || email.isEmpty() || !lastname.contains("@") && !lastname.contains(".")){
-//            
-//            throw new WebApplicationException("Please enter valid email",400);
-//        }
-//        
-//        if(street == null || street.isEmpty() || street.contains("[0-9]+") || street.length() < 3){
-//            
-//            throw new WebApplicationException("Street must only contain letters, and be at least 3 characters",400);
-//        }
-//        
-//        if(addInfo == null || addInfo.isEmpty() || !addInfo.contains("[0-9]+")){
-//            
-//            throw new WebApplicationException("Housenumber must be included",400);
-//        }
-//        if(city == null || city.isEmpty() || city.contains("[0-9]+") || city.length() < 3){
-//            
-//            throw new WebApplicationException("City must be at least 3 characters",400);
-//        }
-//        if(zip == null || zip.isEmpty() || !zip.matches("[0-9]+") || zip.length() < 4){
-//            
-//            throw new WebApplicationException("Zipcode must be 4 digits",400);
-//        }
-//        
-//        return FACADE.addPerson(firstname, lastname, email, street, addInfo, city, Integer.parseInt(zip));
-// 
-//    }
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Create a new Person", tags = {"Person"},
+            responses = {
+                @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "The Newly created Person"),
+                @ApiResponse(responseCode = "400", description = "Not all arguments provided with the body")
+            })
+
+    public PersonDTO addPerson(String personAsJSON) {
+
+        PersonDTO person = GSON.fromJson(personAsJSON, PersonDTO.class);
+        
+        if(person.getFirstname() == null || person.getFirstname().isEmpty() || person.getFirstname().contains("[0-9]+") || person.getFirstname().length() < 2){
+            
+            throw new WebApplicationException("Firstname must be 2 characters",400);
+        }
+        
+        if(person.getLastname() == null || person.getLastname().isEmpty() || person.getLastname().contains("[0-9]+") || person.getLastname().length() < 2){
+            
+            throw new WebApplicationException("Lastname must be 2 characters",400);
+        }
+        if(person.getEmail() == null || person.getEmail().isEmpty() || !person.getEmail().contains("@") && !person.getEmail().contains(".")){
+            
+            throw new WebApplicationException("Please enter valid email",400);
+        }
+        
+        if(person.getStreet() == null || person.getStreet().isEmpty() || person.getStreet().contains("[0-9]+") || person.getStreet().length() < 3){
+            
+            throw new WebApplicationException("Street must only contain letters, and be at least 3 characters",400);
+        }
+        
+        if(person.getAddInfo() == null || person.getAddInfo().isEmpty()){
+            
+            throw new WebApplicationException("Housenumber must be included",400);
+        }
+        if(person.getCity() == null || person.getCity().isEmpty() || person.getCity().contains("[0-9]+") || person.getCity().length() < 3){
+            
+            throw new WebApplicationException("City must be at least 3 characters",400);
+        }
+        if(person.getZip() < 1000 && person.getZip() > 9999){
+            
+            throw new WebApplicationException("Zipcode must be 4 digits",400);
+        }
+
+        return FACADE.addPerson(person);
+        
+    }
 
 }
 

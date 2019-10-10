@@ -22,6 +22,11 @@ public class HobbyDTO {
         this.description = hobby.getDescription();
     }
 
+    public HobbyDTO(String hobby, String description) {
+        this.hobby = hobby;
+        this.description = description;
+    }
+
     public HobbyDTO() {
     }
 

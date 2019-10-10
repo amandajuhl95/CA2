@@ -10,7 +10,6 @@ import entities.Person;
 import entities.Phone;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -26,11 +25,15 @@ public class PersonDTO {
     private String lastname;
     @Schema(required = true, example = "kurt_larsen@hotmail.dk")
     private String email;
-    @Schema(required = true, example = "Svanevej 3")
-    private String address;
-     @Schema(required = true, example = "2200 Copenhagen N")
+    @Schema(required = true, example = "Svanevej")
+    private String street;
+    @Schema(required = true, example = "3")
+    private String addInfo;
+    @Schema(required = true, example = "2200")
+    private int zip;
+    @Schema(required = true, example = "Copenhagen N")
     private String city;   
-     @Schema(example = "[\"65321345\",\"78987654\"]")
+    @Schema(example = "[\"65321345\",\"78987654\"]")
     private Set<PhoneDTO> phones = new HashSet();
     @Schema(example = "[\"Programming\",\"Beer\"]")
     private Set<HobbyDTO> hobbies = new HashSet();
@@ -39,8 +42,10 @@ public class PersonDTO {
         this.firstname = person.getFirstName();
         this.lastname = person.getLastName();
         this.email = person.getEmail();
-        this.address = person.getAddress().getStreet() + " " + person.getAddress().getAddinfo();
-        this.city = person.getAddress().getCityInfo().getZip() + " " + person.getAddress().getCityInfo().getCity();
+        this.street = person.getAddress().getStreet();
+        this.addInfo = person.getAddress().getAddinfo();
+        this.zip = person.getAddress().getCityInfo().getZip();
+        this.city = person.getAddress().getCityInfo().getCity();
         
         for (Hobby hobby : person.getHobbies()) {
            
@@ -52,12 +57,26 @@ public class PersonDTO {
             this.phones.add(new PhoneDTO(phone));
         }
     }
+    
+     public PersonDTO(String firstname, String lastname, String email, String street, String addInfo, String zip, String city) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.street = street;
+        this.addInfo = addInfo;
+        this.zip = Integer.parseInt(zip);
+        this.city = city;
+    }
 
     public PersonDTO() {
     }
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getFirstname() {
@@ -72,8 +91,16 @@ public class PersonDTO {
         return email;
     }
 
-    public String getAddress() {
-        return address;
+    public String getStreet() {
+        return street;
+    }
+    
+    public String getAddInfo() {
+        return addInfo;
+    }
+    
+    public int getZip() {
+        return zip;
     }
 
     public String getCity() {
