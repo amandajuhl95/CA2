@@ -6,8 +6,9 @@
 package entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -34,7 +35,7 @@ public class Address implements Serializable {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private CityInfo cityInfo;
     @OneToMany(mappedBy = "address", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<Person> persons = new ArrayList();
+    private Set<Person> persons = new HashSet();
     
     public Address() {
     }
@@ -86,5 +87,39 @@ public class Address implements Serializable {
     {
         this.persons.remove(person);
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 97 * hash + Objects.hashCode(this.street);
+        hash = 97 * hash + Objects.hashCode(this.addinfo);
+        hash = 97 * hash + Objects.hashCode(this.cityInfo);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Address other = (Address) obj;
+        if (!Objects.equals(this.street, other.street)) {
+            return false;
+        }
+        if (!Objects.equals(this.addinfo, other.addinfo)) {
+            return false;
+        }
+//        if (!Objects.equals(this.cityInfo, other.cityInfo)) {
+//            return false;
+//        }
+        return true;
+    }
+    
     
 }

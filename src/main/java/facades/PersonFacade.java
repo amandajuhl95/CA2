@@ -49,69 +49,70 @@ public class PersonFacade {
         EntityManager em = getEntityManager();
         
         CityInfo cityInfo = new CityInfo(zip, city);
-        CityInfo checkCityInfo = checkAllCityInfo(cityInfo);
-        if(checkCityInfo != null)
-        {
-            cityInfo = checkCityInfo; 
-        }
-        
+//        CityInfo checkCityInfo = checkAllCityInfo(cityInfo);
+//        if(checkCityInfo != null)
+//        {
+//            cityInfo = checkCityInfo; 
+//        }
+//        
         Address address = new Address(street, addinfo, cityInfo);
-        Address checkAddress = checkAllAddresses(address);
-        if(checkAddress!= null)
-        {
-            address = checkAddress;
-        } else
-        {
+//        Address checkAddress = checkAllAddresses(address);
+//        if(checkAddress!= null)
+//        {
+//            address = checkAddress;
+//        } else
+//        {
             cityInfo.addAddress(address);
-        }
+//        }
 
         Person person = new Person(email, firstName, lastName, address);
-       
         try {
             em.getTransaction().begin();
+            em.merge(person);
             em.persist(person);
             em.getTransaction().commit();
         } finally {
             em.close();
         }
+
          return new PersonDTO(person);
     }
     
-    private Address checkAllAddresses(Address address)
-    {
-        EntityManager em = getEntityManager();
-        TypedQuery<Address> query = em.createQuery("SELECT a FROM Address a", Address.class);
-        List<Address> addresses = query.getResultList();
-        
-        Address result = null;
-        for (Address a : addresses) {
-            if(a.getStreet().equals(address.getStreet()) && a.getAddinfo().equals(address.getAddinfo()) && a.getCityInfo().getCity().equals(address.getCityInfo().getCity()) && a.getCityInfo().getZip() == address.getCityInfo().getZip())
-            {
-                result = a;
-                return result;
-            }
-        }
-        return result;
-        
-    }
-    
-    private CityInfo checkAllCityInfo(CityInfo cityInfo)
-    {
-        EntityManager em = getEntityManager();
-        TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c", CityInfo.class);
-        List<CityInfo> cityinfo = query.getResultList();
-        
-        CityInfo result = null;
-        for (CityInfo c : cityinfo) {
-            if(c.getCity().equals(cityInfo.getCity()) && c.getZip() == cityInfo.getZip())
-            {
-                result = c;
-                return result;
-            }
-        }
-        
-        return result;
-    }
+//    private Address checkAllAddresses(Address address)
+//    {
+//        EntityManager em = getEntityManager();
+//        TypedQuery<Address> query = em.createQuery("SELECT a FROM Address a", Address.class);
+//        List<Address> addresses = query.getResultList();
+//        
+//        Address result = null;
+//        for (Address a : addresses) {
+//            if(a.getStreet().equals(address.getStreet()) && a.getAddinfo().equals(address.getAddinfo()) && a.getCityInfo().getCity().equals(address.getCityInfo().getCity()) && a.getCityInfo().getZip() == address.getCityInfo().getZip())
+//            {
+//                result = a;
+//                return result;
+//            }
+//        }
+//        return result;
+//        
+//    }
+//    
+//    private CityInfo checkAllCityInfo(CityInfo cityInfo)
+//    {
+//        EntityManager em = getEntityManager();
+//        TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c", CityInfo.class);
+//        List<CityInfo> cityinfo = query.getResultList();
+//        
+//        CityInfo result = null;
+//        for (CityInfo c : cityinfo) {
+//            if(c.getCity().equals(cityInfo.getCity()) && c.getZip() == cityInfo.getZip())
+//            {
+//                result = c;
+//                return result;
+//            }
+//        }
+//        
+//        return result;
+//    }
             
 
     public void deletePerson(long person_id) throws WebApplicationException {
@@ -133,13 +134,16 @@ public class PersonFacade {
         }
     }
 
-    public Person editPerson(Person person) {
+    public Person editPerson(String person_id, String firstname, String lastname, String email, String street, String addInfo, String city, String zip) {
 
         EntityManager em = getEntityManager();
 
+        Person person = null;
+        
         try {
             em.getTransaction().begin();
             em.merge(person);
+            em.persist(person);
             em.getTransaction().commit();
             return person;
         } finally {
@@ -152,21 +156,21 @@ public class PersonFacade {
 
         EntityManager em = getEntityManager();
         
-        boolean found = false;
-
+//        boolean found = false;
+//
         Person person = em.find(Person.class, person_id);
-        for (Hobby hobby : getAllHobbies()) {
-            if(hobby.getName().equals(name))
-            {
-                person.addHobby(hobby);
-                found = true;
-            }
-        }
-        if(!found)
-        {
+//        for (Hobby hobby : getAllHobbies()) {
+//            if(hobby.getName().equals(name))
+//            {
+//                person.addHobby(hobby);
+//                found = true;
+//            }
+//        }
+//        if(!found)
+//        {
             Hobby add = new Hobby(name, description);
             person.addHobby(add);
-        }
+//        }
 
         try {
             em.getTransaction().begin();
@@ -188,12 +192,12 @@ public class PersonFacade {
         
     }
 
-    public Person deleteHobby(long person_id, long hobby_id) {
+    public Person deleteHobby(long person_id, String hobby_name) {
 
         EntityManager em = getEntityManager();
 
         Person person = em.find(Person.class, person_id);
-        Hobby hobby = em.find(Hobby.class, hobby_id);
+        Hobby hobby = em.find(Hobby.class, hobby_name);
         person.removeHobby(hobby);
 
         try {
@@ -228,12 +232,12 @@ public class PersonFacade {
         }
     }
 
-    public Person deletePhone(long person_id, long phone_id) {
+    public Person deletePhone(long person_id, int number) {
 
         EntityManager em = getEntityManager();
 
         Person person = em.find(Person.class, person_id);
-        Phone phone = em.find(Phone.class, phone_id);
+        Phone phone = em.find(Phone.class, number);
         person.removePhone(phone);
 
         try {
@@ -337,12 +341,13 @@ public class PersonFacade {
         return personsDTO;
     }
 
-    public Long getPersonCountByHobby(String hobby) {
+    public int getPersonCountByHobby(String hobby) {
 
         EntityManager em = getEntityManager();
 
         Query query = em.createQuery("SELECT COUNT(p) FROM Person p INNER JOIN p.hobbies pho WHERE pho.name = :hobby");
-        Long count = (Long) query.setParameter("hobby", hobby).getSingleResult();
+        long c = (long) query.setParameter("hobby", hobby).getSingleResult();
+        int count =(int)c;
         return count;
     }
 

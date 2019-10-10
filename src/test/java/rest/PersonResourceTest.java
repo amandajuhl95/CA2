@@ -163,12 +163,12 @@ public class PersonResourceTest {
         System.out.println("getPerson");
         given()
                 .contentType("application/json")
-                .get("/person/" + p1.getPhones().get(0).getNumber()).then()
+                .get("/person/22112211").then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
                 .body("firstname", equalTo(p1.getFirstName()),
                         "lastname", equalTo(p1.getLastName()),
-                        "hobbies.hobby", hasItems(p1.getHobbies().get(0).getName()));
+                        "hobbies.hobby", hasItems("programming"));
     }
 
     /**
@@ -206,7 +206,7 @@ public class PersonResourceTest {
 //                        "hobbies.hobby", hasItems(hobbyToString(p1.getHobbies()),
 //                                hobbyToString(p2.getHobbies())));
 //    }
-
+//
 //    /**
 //     * Test of getNumberOfPersonsWithHobby method, of class PersonResource.
 //     */
@@ -218,7 +218,7 @@ public class PersonResourceTest {
 //                .get("/person/count/programming").then()
 //                .assertThat()
 //                .statusCode(HttpStatus.OK_200.getStatusCode())
-//                .body("count", equalTo(2));
+//                .body(equalTo((int) 2));
 //    }
     
 
