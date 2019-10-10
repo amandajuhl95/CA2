@@ -123,6 +123,12 @@ public class PersonFacade {
         try {
             em.getTransaction().begin();
             person = em.find(Person.class, person_id);
+            int numOfPeople = getPersonsByAddress(person.getAddress().getStreet(), person.getAddress().getAddinfo()).size();
+            if(numOfPeople == 1)
+            {
+                em.remove(person.getAddress());
+            }
+            
             em.remove(person);
             em.getTransaction().commit();
         } catch (Exception e)
@@ -134,18 +140,25 @@ public class PersonFacade {
         }
     }
 
-    public Person editPerson(String person_id, String firstname, String lastname, String email, String street, String addInfo, String city, String zip) {
+    public PersonDTO editPerson(Long person_id, String firstname, String lastname, String email, String street, String addInfo, String city, int zip) {
 
         EntityManager em = getEntityManager();
 
-        Person person = null;
+        Person person = em.find(Person.class, person_id);
+        person.setFirstName(firstname);
+        person.setLastName(lastname);
+        person.setEmail(email);
+        CityInfo info = new CityInfo(zip, city);
+        Address newAddress = new Address(street, addInfo, info);
+        person.setAddress(newAddress);
+       
         
         try {
             em.getTransaction().begin();
             em.merge(person);
             em.persist(person);
             em.getTransaction().commit();
-            return person;
+            return new PersonDTO(person);
         } finally {
             em.close();
         }

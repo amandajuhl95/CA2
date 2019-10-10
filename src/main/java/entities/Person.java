@@ -30,7 +30,7 @@ public class Person implements Serializable {
     private Address address;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Hobby> hobbies = new HashSet();
-    @OneToMany(mappedBy = "person", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "person", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Phone> phones = new HashSet();
     
     public Person() {

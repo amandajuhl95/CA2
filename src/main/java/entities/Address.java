@@ -34,7 +34,7 @@ public class Address implements Serializable {
     private String addinfo;
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private CityInfo cityInfo;
-    @OneToMany(mappedBy = "address", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "address", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Person> persons = new HashSet();
     
     public Address() {
