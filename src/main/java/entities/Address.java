@@ -31,9 +31,9 @@ public class Address implements Serializable {
     private Long id;
     private String street;
     private String addinfo;
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private CityInfo cityInfo;
-    @OneToMany(mappedBy = "address", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "address", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Person> persons = new ArrayList();
     
     public Address() {

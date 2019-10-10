@@ -25,11 +25,11 @@ public class Person implements Serializable {
     private String email;
     private String firstName;
     private String lastName;
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Address address;
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Hobby> hobbies = new ArrayList();
-    @OneToMany(mappedBy = "person", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "person", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Phone> phones = new ArrayList();
     
     public Person() {

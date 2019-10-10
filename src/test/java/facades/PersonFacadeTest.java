@@ -214,10 +214,9 @@ public class PersonFacadeTest {
         System.out.println("addPerson");
       
         int personsbefore = facade.getAllPersons().size();
-        
-        Address address = new Address("testenvej", "3", cityInfo);
-        Person person = new Person("test@testmail.dk", "Test", "Testen", address);
-        facade.addPerson(person);
+        //CityInfo info = new CityInfo(3223, "thetesttown");
+      
+        facade.addPerson("joe", "ordenary", "test@testmail.dk", "testersvej", "32", cityInfo.getCity(), cityInfo.getZip());
         
         int personsafter = facade.getAllPersons().size();
 

@@ -1,6 +1,7 @@
 package facades;
 
 import dto.PersonDTO;
+import entities.Address;
 import entities.CityInfo;
 import entities.Hobby;
 import entities.Person;
@@ -42,19 +43,75 @@ public class PersonFacade {
         return emf.createEntityManager();
     }
 
-    public Person addPerson(Person person) {
+    public Person addPerson(String firstName, String lastName, String email, String street, String addinfo, String city, int zip) {
 
         EntityManager em = getEntityManager();
+        
+        CityInfo cityInfo = new CityInfo(zip, city);
+        CityInfo checkCityInfo = checkAllCityInfo(cityInfo);
+        if(checkCityInfo != null)
+        {
+            cityInfo = checkCityInfo; 
+        }
+        
+        Address address = new Address(street, addinfo, cityInfo);
+        Address checkAddress = checkAllAddresses(address);
+        if(checkAddress!= null)
+        {
+            address = checkAddress;
+        } else
+        {
+            cityInfo.addAddress(address);
+        }
 
+        Person person = new Person(email, firstName, lastName, address);
+       
         try {
             em.getTransaction().begin();
             em.persist(person);
             em.getTransaction().commit();
-            return person;
         } finally {
             em.close();
         }
+         return person;
     }
+    
+    private Address checkAllAddresses(Address address)
+    {
+        EntityManager em = getEntityManager();
+        TypedQuery<Address> query = em.createQuery("SELECT a FROM Address a", Address.class);
+        List<Address> addresses = query.getResultList();
+        
+        Address result = null;
+        for (Address a : addresses) {
+            if(a.getStreet().equals(address.getStreet()) && a.getAddinfo().equals(address.getAddinfo()) && a.getCityInfo().getCity().equals(address.getCityInfo().getCity()) && a.getCityInfo().getZip() == address.getCityInfo().getZip())
+            {
+                result = a;
+                return result;
+            }
+        }
+        return result;
+        
+    }
+    
+    private CityInfo checkAllCityInfo(CityInfo cityInfo)
+    {
+        EntityManager em = getEntityManager();
+        TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c", CityInfo.class);
+        List<CityInfo> cityinfo = query.getResultList();
+        
+        CityInfo result = null;
+        for (CityInfo c : cityinfo) {
+            if(c.getCity().equals(cityInfo.getCity()) && c.getZip() == cityInfo.getZip())
+            {
+                result = c;
+                return result;
+            }
+        }
+        
+        return result;
+    }
+            
 
     public Person deletePerson(long person_id) {
 

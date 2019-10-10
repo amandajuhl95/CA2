@@ -30,7 +30,7 @@ public class CityInfo implements Serializable {
     private Long id;
     private int zip;
     private String city;
-    @OneToMany(mappedBy = "cityInfo", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "cityInfo", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Address> addresses = new ArrayList();
 
     public CityInfo() {
