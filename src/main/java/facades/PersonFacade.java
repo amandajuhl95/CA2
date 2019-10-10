@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.ws.rs.WebApplicationException;
 
 /**
  *
@@ -113,7 +114,7 @@ public class PersonFacade {
     }
             
 
-    public Person deletePerson(long person_id) {
+    public void deletePerson(long person_id) throws WebApplicationException {
 
         EntityManager em = getEntityManager();
         Person person;
@@ -123,10 +124,13 @@ public class PersonFacade {
             person = em.find(Person.class, person_id);
             em.remove(person);
             em.getTransaction().commit();
-        } finally {
+        } catch (Exception e)
+        {
+            throw new WebApplicationException("Could not delete person", 400);
+        }
+        finally {
             em.close();
         }
-        return person;
     }
 
     public Person editPerson(Person person) {
