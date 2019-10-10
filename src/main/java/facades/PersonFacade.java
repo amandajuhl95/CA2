@@ -43,7 +43,7 @@ public class PersonFacade {
         return emf.createEntityManager();
     }
 
-    public Person addPerson(String firstName, String lastName, String email, String street, String addinfo, String city, int zip) {
+    public PersonDTO addPerson(String firstName, String lastName, String email, String street, String addinfo, String city, int zip) {
 
         EntityManager em = getEntityManager();
         
@@ -73,7 +73,7 @@ public class PersonFacade {
         } finally {
             em.close();
         }
-         return person;
+         return new PersonDTO(person);
     }
     
     private Address checkAllAddresses(Address address)
