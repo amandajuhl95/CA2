@@ -237,32 +237,41 @@ public class PersonResourceTest {
 //    /**
 //     * Test of DeleteUser method, of class PersonResource.
 //     */
-//    @Test
-//    public void testDeleteUser() {
-//        System.out.println("DeleteUser");
-//        String id = "";
-//        PersonResource instance = new PersonResource();
-//        PersonDTO expResult = null;
-//        PersonDTO result = instance.DeleteUser(id);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    @Test
+    public void testDeleteUser() {
+        System.out.println("DeleteUser");
+        
+        given().contentType("application/json")
+                .delete("/person/delete/" + p1.getId()).then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("status", equalTo("Person has been deleted"));
+        
+    }
 
-//    /**
-//     * Test of EditUser method, of class PersonResource.
-//     */
-//    @Test
-//    public void testEditUser() {
-//        System.out.println("EditUser");
-//        PersonDTO person = null;
-//        PersonResource instance = new PersonResource();
-//        PersonDTO expResult = null;
-//        PersonDTO result = instance.EditUser(person);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    /**
+     * Test of EditUser method, of class PersonResource.
+     */
+    @Test
+    public void testEditUser() {
+        System.out.println("EditUser");
+       
+        String payload = "{\"firstname\": \"jim\","
+                + "\"lastname\": \"theMan\","
+                + "\"email\": \"jim@gmail.com\","
+                + "\"street\": \"Fasanvej\","
+                + "\"addInfo\": \"2 th\","
+                + "\"city\": \"testTown\","
+                + "\"zip\": \"2200\"}";
+
+        given().contentType("application/json")
+                .body(payload)
+                .post("/person/edit/" + p1.getId()).then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("firstname", equalTo("jim"), "lastname", equalTo("theMan"), "email", equalTo("jim@gmail.com"), "street", equalTo("Fasanvej"), "addInfo", equalTo("2 th"), "city", equalTo("testTown"),"zip", equalTo(2200));
+        
+    }
 
     /**
      * Test of addPerson method, of class PersonResource.

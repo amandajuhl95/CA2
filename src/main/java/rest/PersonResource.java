@@ -3,6 +3,7 @@ package rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dto.PersonDTO;
+import entities.Person;
 import utils.EMF_Creator;
 import facades.PersonFacade;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -55,6 +56,14 @@ public class PersonResource {
     @Produces({MediaType.APPLICATION_JSON})
     public String demo() {
         return "{\"msg\":\"Hello World\"}";
+    }
+    
+    @GET
+    @Path("/id/{id}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public PersonDTO getPerson(@PathParam("id") long id) {
+
+        return FACADE.getPersonById(id);
     }
 
     @GET
@@ -160,7 +169,7 @@ public class PersonResource {
     }
 
     @DELETE
-    @Path("/{id}")
+    @Path("/delete/{id}")
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Delete a person with a given id",
             tags = {"Person"},
@@ -170,73 +179,74 @@ public class PersonResource {
                 @ApiResponse(responseCode = "200", description = "person was deleted"),
                 @ApiResponse(responseCode = "400", description = "wrong id passed")})
 
-    public String DeleteUser(@PathParam("id") String id) {
+    public String DeleteUser(@PathParam("id") long id) {
 
-        if (id == null || id.isEmpty()) {
+        if (id == 0) {
 
             throw new WebApplicationException("Id not passed correctly", 400);
         }
 
-        FACADE.deletePerson(Long.parseLong(id));
+        FACADE.deletePerson(id);
 
-        return "Person has been deleted";
+        return "{\"status\": \"Person has been deleted\"}";
     }
 
-//       @PUT
-//    @Path("/{id}")
-//    @Produces({MediaType.APPLICATION_JSON})
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Operation(summary = "Edit a person with a given id",
-//            tags = {"Person"},
-//            responses = {
-//                @ApiResponse(
-//                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-//                @ApiResponse(responseCode = "200", description = "person was edited"),
-//                @ApiResponse(responseCode = "400", description = "person was NOT editet")})
-//
-//    public PersonDTO EditUser(String person_id, String firstname, String lastname, String email, String street, String addInfo, String city, String zip) {
-//      
-//        if (person_id == null  ||person_id.isEmpty()){
-//              
-//            throw new WebApplicationException("Id not passed correctly",400);
-//        }
-//        if(firstname == null || firstname.isEmpty() || firstname.contains("[0-9]+") || firstname.length() < 2){
-//            
-//            throw new WebApplicationException("Firstname must be 2 characters",400);
-//        }
-//        
-//        if(lastname == null || lastname.isEmpty() || lastname.contains("[0-9]+") || lastname.length() < 2){
-//            
-//            throw new WebApplicationException("Lastname must be 2 characters",400);
-//        }
-//        if(email == null || email.isEmpty() || !lastname.contains("@") && !lastname.contains(".")){
-//            
-//            throw new WebApplicationException("Please enter valid email",400);
-//        }
-//        
-//        if(street == null || street.isEmpty() || street.contains("[0-9]+") || street.length() < 3){
-//            
-//            throw new WebApplicationException("Street must only contain letters, and be at least 3 characters",400);
-//        }
-//        
-//        if(addInfo == null || addInfo.isEmpty() || !addInfo.contains("[0-9]+")){
-//            
-//            throw new WebApplicationException("Housenumber must be included",400);
-//        }
-//        if(city == null || city.isEmpty() || city.contains("[0-9]+") || city.length() < 3){
-//            
-//            throw new WebApplicationException("City must be at least 3 characters",400);
-//        }
-//        if(zip == null || zip.isEmpty() || !zip.matches("[0-9]+") || zip.length() < 4){
-//            
-//            throw new WebApplicationException("Zipcode must be 4 digits",400);
-//        }
-//        
-//        return new PersonDTO(FACADE.editPerson(person_id, firstname, lastname, email, street, addInfo, city, zip));
-//        
-//       
-//        
-//    }
+    @PUT
+    @Path("/edit/{id}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Edit a person with a given id",
+            tags = {"Person"},
+            responses = {
+                @ApiResponse(
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "person was edited"),
+                @ApiResponse(responseCode = "400", description = "person was NOT editet")})
+
+    public PersonDTO EditUser(@PathParam("id") long id, String personAsJSON) {
+        
+        PersonDTO person = GSON.fromJson(personAsJSON, PersonDTO.class);
+        
+        if (person.getId() == 0){
+              
+            throw new WebApplicationException("Id not passed correctly",400);
+        }
+        if(person.getFirstname() == null || person.getFirstname().isEmpty() || person.getFirstname().contains("[0-9]+") || person.getFirstname().length() < 2){
+            
+            throw new WebApplicationException("Firstname must be 2 characters",400);
+        }
+        
+        if(person.getLastname() == null || person.getLastname().isEmpty() || person.getLastname().contains("[0-9]+") || person.getLastname().length() < 2){
+            
+            throw new WebApplicationException("Lastname must be 2 characters",400);
+        }
+        if(person.getEmail() == null || person.getEmail().isEmpty() || !person.getEmail().contains("@") && !person.getEmail().contains(".")){
+            
+            throw new WebApplicationException("Please enter valid email",400);
+        }
+        
+        if(person.getStreet() == null || person.getStreet().isEmpty() || person.getStreet().contains("[0-9]+") || person.getStreet().length() < 3){
+            
+            throw new WebApplicationException("Street must only contain letters, and be at least 3 characters",400);
+        }
+        
+        if(person.getAddInfo() == null || person.getAddInfo().isEmpty() || !person.getAddInfo().contains("[0-9]+")){
+            
+            throw new WebApplicationException("Housenumber must be included",400);
+        }
+        if(person.getCity() == null || person.getCity().isEmpty() || person.getCity().contains("[0-9]+") || person.getCity().length() < 3){
+            
+            throw new WebApplicationException("City must be at least 3 characters",400);
+        }
+        if(person.getZip() < 1000 || person.getZip() > 9999){
+            
+            throw new WebApplicationException("Zipcode must be 4 digits",400);
+        }
+       
+        person.setId(id);
+        return FACADE.editPerson(person);
+    }
+    
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -278,7 +288,7 @@ public class PersonResource {
 
             throw new WebApplicationException("City must be at least 3 characters", 400);
         }
-        if (person.getZip() < 1000 && person.getZip() > 9999) {
+        if (person.getZip() < 1000 || person.getZip() > 9999) {
 
             throw new WebApplicationException("Zipcode must be 4 digits", 400);
         }
