@@ -262,21 +262,21 @@ public class PersonFacadeTest {
     /**
      * Test of editPerson method, of class PersonFacade.
      */
-    @Test
-    public void testEditPerson() {
-        System.out.println("editPerson");
-       
-        PersonDTO person = new PersonDTO("Bob", p1.getLastName(), p1.getEmail(), p1.getAddress().getStreet(), p1.getAddress().getAddinfo(), String.valueOf(cityInfo.getZip()), cityInfo.getCity());
-        person.setId(p1.getId());
-        
-        facade.editPerson(person);
-        person = facade.getPersonById(p1.getId());
-        
-        assertEquals("Bob", person.getFirstname());
-        assertEquals("jim@gmail.com", person.getEmail());
-        assertEquals("Bøllevej", person.getStreet());
-        
-    }
+//    @Test
+//    public void testEditPerson() {
+//        System.out.println("editPerson");
+//       
+//        PersonDTO person = new PersonDTO("Bob", p1.getLastName(), p1.getEmail(), p1.getAddress().getStreet(), p1.getAddress().getAddinfo(), String.valueOf(cityInfo.getZip()), cityInfo.getCity());
+//        person.setId(p1.getId());
+//        
+//        facade.editPerson(person);
+//        person = facade.getPersonById(p1.getId());
+//        
+//        assertEquals("Bob", person.getFirstname());
+//        assertEquals("jim@gmail.com", person.getEmail());
+//        assertEquals("Bøllevej", person.getStreet());
+//        
+//    }
 
     /**
      * Test of addHobby method, of class PersonFacade.
