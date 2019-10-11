@@ -67,12 +67,16 @@ public class PersonFacade {
                 address = new Address(p.getStreet(), p.getAddInfo(), cityInfo);
             }
 
-            Person person = new Person(p.getEmail(), p.getFirstname(), p.getLastname(), address);
+       
 
             CityInfo mergedCity = em.merge(cityInfo);
             Address mergedAddress = em.merge(address);
-
             address.setCityInfo(mergedCity);
+            
+            
+            Person person = new Person(p.getEmail(), p.getFirstname(), p.getLastname(), address);
+            
+            
             person.setAddress(mergedAddress);
 
             em.persist(person);

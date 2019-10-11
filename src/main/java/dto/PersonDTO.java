@@ -39,6 +39,7 @@ public class PersonDTO {
     private Set<HobbyDTO> hobbies = new HashSet();
 
     public PersonDTO(Person person) {
+        this.id = person.getId();
         this.firstname = person.getFirstName();
         this.lastname = person.getLastName();
         this.email = person.getEmail();
