@@ -344,7 +344,7 @@ public class PersonFacade {
         return personsDTO;
     }
 
-    private CityInfo getCityInfo(String city) {
+    public CityInfo getCityInfo(String city) {
 
         EntityManager em = getEntityManager();
 

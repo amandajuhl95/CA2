@@ -116,7 +116,10 @@ public class Address implements Serializable {
         if (!Objects.equals(this.addinfo, other.addinfo)) {
             return false;
         }
-        if (!Objects.equals(this.cityInfo, other.cityInfo)) {
+        if (!Objects.equals(this.cityInfo.getCity(), other.cityInfo.getCity())) {
+            return false;
+        }
+        if (!Objects.equals(this.cityInfo.getZip(), other.cityInfo.getZip())) {
             return false;
         }
         return true;
