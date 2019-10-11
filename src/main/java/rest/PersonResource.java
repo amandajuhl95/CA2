@@ -2,7 +2,9 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dto.HobbyDTO;
 import dto.PersonDTO;
+import entities.CityInfo;
 import entities.Person;
 import utils.EMF_Creator;
 import facades.PersonFacade;
@@ -17,6 +19,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -28,6 +31,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import org.eclipse.persistence.jpa.jpql.parser.ElseExpressionBNF;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -292,11 +296,60 @@ public class PersonResource {
 
             throw new WebApplicationException("Zipcode must be 4 digits", 400);
         }
+         
+        CityInfo cityByCity = FACADE.getCityInfo(person.getCity());
+         CityInfo cityByZip = FACADE.getCityInfo(String.valueOf(person.getZip()));
+         
+          if (cityByCity != null || cityByZip != null) {
+              
+              if(cityByCity == null && cityByZip != null)
+              {
+                  throw new WebApplicationException("Zipcode matches another city", 400);
+              }
+              else if(cityByCity != null && cityByZip == null)
+              {
+                  throw new WebApplicationException("City matches another zipcode", 400);
+              }
+              else if(!cityByCity.getId().equals(cityByZip.getId())){
+              
+                  throw new WebApplicationException("Zipcode and city matches other cities ", 400);
+          }
+        }
 
         return FACADE.addPerson(person);
 
     }
 
+    
+    @Path("/addhobby/{id}")
+      @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "adds a new hobby to the database and the person", tags = {"Person"},
+            responses = {
+                @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "a new hobby has been added to the person"),
+                @ApiResponse(responseCode = "400", description = "Not all arguments provided with the body")
+            })
+
+    public Person addhobby(@PathParam("id") long id, String HobbyAsJSON) {
+
+        HobbyDTO hobby = GSON.fromJson(HobbyAsJSON, HobbyDTO.class);
+
+        if (hobby.getHobby() == null ||  hobby.getHobby().length() < 2 ) {
+
+            throw new WebApplicationException("hobby must be 2 characters", 400);
+        }
+
+        if ( hobby.getDescription() == null ||  hobby.getDescription().length() < 2) {
+
+            throw new WebApplicationException("description must be 2 characters", 400);
+        }
+
+        return FACADE.addHobby(id, hobby.getHobby(), hobby.getDescription());
+
+    }
+    
 }
 
 

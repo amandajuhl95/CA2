@@ -294,4 +294,21 @@ public class PersonResourceTest {
                 .body("firstname", equalTo("Test"), "lastname", equalTo("Testen"), "email", equalTo("bum@hotmail.com"), "street", equalTo("Testvej"), "addInfo", equalTo("1 tv"), "city", equalTo("Testby"),"zip", equalTo(2230));
     
     }
+    
+      /**
+     * Test of addPerson method, of class PersonResource.
+     */
+    @Test
+    public void testaddhobby() {
+        String payload = "{\"hobby\": \"testhob\","
+                + "\"description\": \"a hobby test description\"";
+
+        given().contentType("application/json")
+                .body(payload)
+                .post("/addhobby/" + p1.getId()).then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("hobby", equalTo("testhob"), "description", equalTo("a hobby test description"));
+    
+    }
 }
