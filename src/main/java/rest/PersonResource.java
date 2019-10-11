@@ -332,7 +332,7 @@ public class PersonResource {
                 @ApiResponse(responseCode = "400", description = "Not all arguments provided with the body")
             })
 
-    public Person addhobby(@PathParam("id") long id, String HobbyAsJSON) {
+    public PersonDTO addhobby(@PathParam("id") long id, String HobbyAsJSON) {
 
         HobbyDTO hobby = GSON.fromJson(HobbyAsJSON, HobbyDTO.class);
 
@@ -346,7 +346,7 @@ public class PersonResource {
             throw new WebApplicationException("description must be 2 characters", 400);
         }
 
-        return FACADE.addHobby(id, hobby.getHobby(), hobby.getDescription());
+        return FACADE.addHobby(id, hobby);
 
     }
     
