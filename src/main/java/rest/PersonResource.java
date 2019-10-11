@@ -33,23 +33,14 @@ import javax.ws.rs.core.MediaType;
                 title = "Person API",
                 version = "0.1",
                 description = "Simple API to get info about persons with hobbies.",
-                contact = @Contact(name = "Choko Bananen", email = "cph-ah433@cphbusiness.dk")
-        ),
+                contact = @Contact(name = "Choko Bananen", email = "cph-ah433@cphbusiness.dk")),
         tags = {
-            @Tag(name = "Person", description = "API related to Person Info")
-
-        },
+            @Tag(name = "Person", description = "API related to Person Info")},
         servers = {
-            @Server(
-                    description = "For Local host testing",
-                    url = "http://localhost:8080/CA2"
-            ),
-            @Server(
-                    description = "Server API",
-                    url = "http://mydroplet"
-            )
-
-        }
+            @Server(description = "For Local host testing",
+                    url = "http://localhost:8080/CA2"),
+            @Server(description = "Server API",
+                    url = "http://mydroplet")}
 )
 
 //Todo Remove or change relevant parts before ACTUAL use
@@ -72,8 +63,7 @@ public class PersonResource {
     @Operation(summary = "Get Person info by phonenumber",
             tags = {"Person"},
             responses = {
-                @ApiResponse(
-                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
                 @ApiResponse(responseCode = "200", description = "The Requested Person"),
                 @ApiResponse(responseCode = "400", description = "Person not found")})
 
@@ -260,41 +250,41 @@ public class PersonResource {
     public PersonDTO addPerson(String personAsJSON) {
 
         PersonDTO person = GSON.fromJson(personAsJSON, PersonDTO.class);
-        
-        if(person.getFirstname() == null || person.getFirstname().isEmpty() || person.getFirstname().contains("[0-9]+") || person.getFirstname().length() < 2){
-            
-            throw new WebApplicationException("Firstname must be 2 characters",400);
+
+        if (person.getFirstname() == null || person.getFirstname().isEmpty() || person.getFirstname().contains("[0-9]+") || person.getFirstname().length() < 2) {
+
+            throw new WebApplicationException("Firstname must be 2 characters", 400);
         }
-        
-        if(person.getLastname() == null || person.getLastname().isEmpty() || person.getLastname().contains("[0-9]+") || person.getLastname().length() < 2){
-            
-            throw new WebApplicationException("Lastname must be 2 characters",400);
+
+        if (person.getLastname() == null || person.getLastname().isEmpty() || person.getLastname().contains("[0-9]+") || person.getLastname().length() < 2) {
+
+            throw new WebApplicationException("Lastname must be 2 characters", 400);
         }
-        if(person.getEmail() == null || person.getEmail().isEmpty() || !person.getEmail().contains("@") && !person.getEmail().contains(".")){
-            
-            throw new WebApplicationException("Please enter valid email",400);
+        if (person.getEmail() == null || person.getEmail().isEmpty() || !person.getEmail().contains("@") && !person.getEmail().contains(".")) {
+
+            throw new WebApplicationException("Please enter valid email", 400);
         }
-        
-        if(person.getStreet() == null || person.getStreet().isEmpty() || person.getStreet().contains("[0-9]+") || person.getStreet().length() < 3){
-            
-            throw new WebApplicationException("Street must only contain letters, and be at least 3 characters",400);
+
+        if (person.getStreet() == null || person.getStreet().isEmpty() || person.getStreet().contains("[0-9]+") || person.getStreet().length() < 3) {
+
+            throw new WebApplicationException("Street must only contain letters, and be at least 3 characters", 400);
         }
-        
-        if(person.getAddInfo() == null || person.getAddInfo().isEmpty()){
-            
-            throw new WebApplicationException("Housenumber must be included",400);
+
+        if (person.getAddInfo() == null || person.getAddInfo().isEmpty()) {
+
+            throw new WebApplicationException("Housenumber must be included", 400);
         }
-        if(person.getCity() == null || person.getCity().isEmpty() || person.getCity().contains("[0-9]+") || person.getCity().length() < 3){
-            
-            throw new WebApplicationException("City must be at least 3 characters",400);
+        if (person.getCity() == null || person.getCity().isEmpty() || person.getCity().contains("[0-9]+") || person.getCity().length() < 3) {
+
+            throw new WebApplicationException("City must be at least 3 characters", 400);
         }
-        if(person.getZip() < 1000 && person.getZip() > 9999){
-            
-            throw new WebApplicationException("Zipcode must be 4 digits",400);
+        if (person.getZip() < 1000 && person.getZip() > 9999) {
+
+            throw new WebApplicationException("Zipcode must be 4 digits", 400);
         }
 
         return FACADE.addPerson(person);
-        
+
     }
 
 }
