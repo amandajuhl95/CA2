@@ -130,6 +130,7 @@ public class PersonFacade {
 
         EntityManager em = getEntityManager();
 
+        //Checking if cityinfo already exsists in Database
         CityInfo cityInfo;
         List<CityInfo> cityDB = getCityInfo(p.getCity(), p.getZip());
         if (cityDB.size() > 0) {
@@ -138,6 +139,7 @@ public class PersonFacade {
             cityInfo = new CityInfo(p.getZip(), p.getCity());
         }
 
+        //Checking if address already exsists in Database
         Address address;
         List<Address> addressDB = getAddress(p.getStreet(), p.getAddInfo());
         if (addressDB.size() > 0) {
@@ -146,28 +148,30 @@ public class PersonFacade {
             address = new Address(p.getStreet(), p.getAddInfo(), cityInfo);
         }
 
+        //Setting edits on the person with the given id
         Person person = em.find(Person.class, p.getId());
         person.setFirstName(p.getFirstname());
         person.setLastName(p.getLastname());
         person.setEmail(p.getEmail());
 
-        //removing old address relations, for it to be deleted, if no one lives there
+        //Removing old address relations, for it to be deleted, if no one lives there
         Address oldAddress = person.getAddress();
         int numOfPeople = getPersonsByAddress(oldAddress.getStreet(), oldAddress.getAddinfo()).size();
 
-        if (numOfPeople == 1 && !oldAddress.equals(person.getAddress())) {
+        if (numOfPeople == 1 && !oldAddress.equals(address)) {
             oldAddress.removePerson(person);
-            person.setAddress(address);
             oldAddress.getCityInfo().removeAddress(oldAddress);
         }
 
         try {
             em.getTransaction().begin();
-
+            
+            //Merging the new address and city
             CityInfo mergedCity = em.merge(cityInfo);
             Address mergedAddress = em.merge(address);
 
-            address.setCityInfo(mergedCity);
+            //
+            mergedAddress.setCityInfo(mergedCity);
             person.setAddress(mergedAddress);
 
             em.merge(person);
