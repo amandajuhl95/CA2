@@ -221,8 +221,25 @@ public class PersonFacadeTest {
 
         assertTrue(personsbefore < personsafter);
         
+    }
+    
+        /**
+     * Test of addPerson method, of class PersonFacade.
+     */
+    @Test
+    public void testAddPersonWithNewAddress() {
+        System.out.println("addPersonWithNewAddress");
+      
+        int personsbefore = facade.getAllPersons().size();
+        PersonDTO p = new PersonDTO("Smukke", "Charlie", "smukke@testmail.dk", "Somestreet", "22", String.valueOf(2200), "Copenhagen N");
+        facade.addPerson(p);
+        int personsafter = facade.getAllPersons().size();
+
+        assertTrue(personsbefore + 1 == personsafter);
         
     }
+    
+    
 
     /**
      * Test of deletePerson method, of class PersonFacade.
@@ -245,6 +262,7 @@ public class PersonFacadeTest {
     /**
      * Test of editPerson method, of class PersonFacade.
      */
+
     @Test
     public void testEditPerson() {
         System.out.println("editPerson");
