@@ -1,6 +1,5 @@
-
 package facades;
-             
+
 import dto.PersonDTO;
 import entities.Address;
 import entities.CityInfo;
@@ -16,7 +15,6 @@ import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,8 +31,9 @@ public class PersonFacadeTest {
     private Person p1;
     private Person p2;
     private CityInfo cityInfo;
-    private Hobby hobby2;
     private Hobby hobby1;
+    private Hobby hobby2;
+    private Hobby hobby3;
     private Phone phone1;
     private Phone phone2;
     private Address address1;
@@ -60,9 +59,9 @@ public class PersonFacadeTest {
     public void setUp() {
 
         EntityManager em = emf.createEntityManager();
-        
+
         cityInfo = new CityInfo(2200, "testTown");
-        
+
         address1 = new Address("streetname", "4 tv", cityInfo);
         address2 = new Address("gadevejen", "1 th", cityInfo);
         p1 = new Person("jim@gmail.com", "jim", "theMan", address1);
@@ -71,18 +70,18 @@ public class PersonFacadeTest {
         phone2 = new Phone(99889988, "privatePhone");
         hobby1 = new Hobby("programming", "the future of mankind is programming, also good for making a blog about your dog pictures");
         hobby2 = new Hobby("jumping", "super fun and easy");
-        
+        hobby3 = new Hobby("Handball", "Team sport");
+
         cityInfo.addAddress(address1);
         p1.addHobby(hobby1);
         p1.addHobby(hobby2);
+        p1.addHobby(hobby3);
         p1.addPhone(phone1);
-    
 
         cityInfo.addAddress(address2);
         p2.addHobby(hobby2);
         p2.addHobby(hobby1);
         p2.addPhone(phone2);
-
 
         try {
             em.getTransaction().begin();
@@ -109,33 +108,115 @@ public class PersonFacadeTest {
     }
 
     /**
-     * Test of getFacadeExample method, of class PersonFacade.
+     * Test of addPerson method, of class PersonFacade.
      */
-//    @Test
-//    public void testGetFacadeExample() {
-//        System.out.println("getFacadeExample");
-//        EntityManagerFactory _emf = null;
-//        PersonFacade expResult = null;
-//        PersonFacade result = PersonFacade.getFacadeExample(_emf);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    @Test
+    public void testAddPerson() {
+        System.out.println("addPerson");
+
+        int personsbefore = facade.getAllPersons().size();
+        PersonDTO p = new PersonDTO("joe", "ordenary", "test@testmail.dk", address1.getStreet(), address1.getAddinfo(), String.valueOf(cityInfo.getZip()), cityInfo.getCity());
+        facade.addPerson(p);
+        int personsafter = facade.getAllPersons().size();
+
+        assertTrue(personsbefore < personsafter);
+
+    }
+
+    /**
+     * Test of addPerson method, of class PersonFacade.
+     */
+    @Test
+    public void testAddPersonWithNewAddress() {
+        System.out.println("addPersonWithNewAddress");
+
+        int personsbefore = facade.getAllPersons().size();
+        PersonDTO p = new PersonDTO("Smukke", "Charlie", "smukke@testmail.dk", "Somestreet", "22", String.valueOf(2200), "Copenhagen N");
+        facade.addPerson(p);
+        int personsafter = facade.getAllPersons().size();
+
+        assertTrue(personsbefore + 1 == personsafter);
+
+    }
+
+    /**
+     * Test of editPerson method, of class PersonFacade.
+     */
+    @Test
+    public void testEditPerson() {
+        System.out.println("editPerson");
+
+        PersonDTO person = new PersonDTO("Bob", p1.getLastName(), p1.getEmail(), "Bøllevej", "3", String.valueOf(cityInfo.getZip()), cityInfo.getCity());
+        person.setId(p1.getId());
+
+        facade.editPerson(person);
+        person = facade.getPersonById(p1.getId());
+
+        assertEquals("Bob", person.getFirstname());
+        assertEquals("jim@gmail.com", person.getEmail());
+        assertEquals("Bøllevej", person.getStreet());
+
+    }
+
+    /**
+     * Test of deletePerson method, of class PersonFacade.
+     */
+    @Test
+    public void testDeletePerson() {
+        System.out.println("deletePerson");
+
+        int personsbefore = facade.getAllPersons().size();
+        facade.deletePerson(p1.getId());
+        int personsafter = facade.getAllPersons().size();
+
+        assertTrue(personsbefore > personsafter);
+
+    }
+
     /**
      * Test of getPerson method, of class PersonFacade.
      */
     @Test
     public void testGetPerson() {
         System.out.println("getPerson");
-        
+
         int number = 22112211;
-       
+
         String expResult = "jim";
         PersonDTO result = facade.getPerson(number);
-        
+
         assertEquals(expResult, result.getFirstname());
         assertEquals("jim@gmail.com", result.getEmail());
-        assertEquals(2, result.getHobbies().size());
+        assertEquals(3, result.getHobbies().size());
+    }
+
+    /**
+     * Test of getPersonById method, of class PersonFacade.
+     */
+    @Test
+    public void testGetPersonById() {
+        System.out.println("getPersonById");
+
+        PersonDTO personDTO = facade.getPersonById(p1.getId());
+
+        assertFalse(personDTO == null);
+        assertEquals("jim@gmail.com", personDTO.getEmail());
+        assertEquals("jim", personDTO.getFirstname());
+        assertEquals(2, personDTO.getHobbies().size());
+    }
+
+    /**
+     * Test of getPersonCountByHobby method, of class PersonFacade.
+     */
+    @Test
+    public void testGetPersonCountByHobby() {
+        System.out.println("getPersonCountByHobby");
+        String hobby = "jumping";
+
+        long expResult = 2;
+        long result = facade.getPersonCountByHobby(hobby);
+        assertEquals(expResult, result);
+
     }
 
     /**
@@ -166,16 +247,17 @@ public class PersonFacadeTest {
     }
 
     /**
-     * Test of getPersonCountByHobby method, of class PersonFacade.
+     * Test of getPersonsByAdress method, of class PersonFacade.
      */
     @Test
-    public void testGetPersonCountByHobby() {
-        System.out.println("getPersonCountByHobby");
-        String hobby = "jumping";
+    public void testGetPersonsByAddress() {
+        System.out.println("getPersonsByAddress");
 
-        long expResult = 2;
-        long result = facade.getPersonCountByHobby(hobby);
-        assertEquals(expResult, result);
+        String street = "streetname";
+        String addinfo = "4 tv";
+
+        List<PersonDTO> persondto = facade.getPersonsByAddress(street, addinfo);
+        assertEquals(1, persondto.size());
 
     }
 
@@ -193,93 +275,6 @@ public class PersonFacadeTest {
     }
 
     /**
-     * Test of getPersonsByAdress method, of class PersonFacade.
-     */
-    @Test
-    public void testGetPersonsByAddress() {
-        System.out.println("getPersonsByAddress");
-
-        String street = "streetname";
-        String addinfo = "4 tv";
-
-        List<PersonDTO> persondto = facade.getPersonsByAddress(street, addinfo);
-        assertEquals(1, persondto.size());
-
-    }
-
-    /**
-     * Test of addPerson method, of class PersonFacade.
-     */
-    @Test
-    public void testAddPerson() {
-        System.out.println("addPerson");
-      
-        int personsbefore = facade.getAllPersons().size();
-        PersonDTO p = new PersonDTO("joe", "ordenary", "test@testmail.dk", address1.getStreet(), address1.getAddinfo(), String.valueOf(cityInfo.getZip()), cityInfo.getCity());
-        facade.addPerson(p);
-        int personsafter = facade.getAllPersons().size();
-
-        assertTrue(personsbefore < personsafter);
-        
-    }
-    
-        /**
-     * Test of addPerson method, of class PersonFacade.
-     */
-    @Test
-    public void testAddPersonWithNewAddress() {
-        System.out.println("addPersonWithNewAddress");
-      
-        int personsbefore = facade.getAllPersons().size();
-        PersonDTO p = new PersonDTO("Smukke", "Charlie", "smukke@testmail.dk", "Somestreet", "22", String.valueOf(2200), "Copenhagen N");
-        facade.addPerson(p);
-        int personsafter = facade.getAllPersons().size();
-
-        assertTrue(personsbefore + 1 == personsafter);
-        
-    }
-    
-    
-
-    /**
-     * Test of deletePerson method, of class PersonFacade.
-     */
-    @Test
-    public void testDeletePerson() {
-        System.out.println("deletePerson");
-          
-        int personsbefore = facade.getAllPersons().size();
-        
-        
-        facade.deletePerson(p1.getId());
-        
-        int personsafter = facade.getAllPersons().size();
-
-        assertTrue(personsbefore > personsafter);
-        
-    }
-
-    /**
-     * Test of editPerson method, of class PersonFacade.
-     */
-
-    @Test
-    public void testEditPerson() {
-        System.out.println("editPerson");
-       
-        PersonDTO person = new PersonDTO("Bob", p1.getLastName(), p1.getEmail(), "Bøllevej", "3", String.valueOf(cityInfo.getZip()), cityInfo.getCity());
-        person.setId(p1.getId());
-        
-        facade.editPerson(person);
-        person = facade.getPersonById(p1.getId());
-        
-        assertEquals("Bob", person.getFirstname());
-        assertEquals("jim@gmail.com", person.getEmail());
-        assertEquals("Bøllevej", person.getStreet());
-        
-    }
-
-    /**
      * Test of addHobby method, of class PersonFacade.
      */
     @Test
@@ -290,7 +285,7 @@ public class PersonFacadeTest {
         int hobbiesbefore = p1.getHobbies().size();
         p1 = facade.addHobby(p1.getId(), "Handball", "A team sport. The team with the highest score wins");
         int hobbiesafter = p1.getHobbies().size();
-        
+
         assertTrue(hobbiesbefore < hobbiesafter);
     }
 
@@ -303,9 +298,12 @@ public class PersonFacadeTest {
         System.out.println("deleteHobby");
 
         int hobbiesbefore = p1.getHobbies().size();
-        p1 = facade.deleteHobby(p1.getId(), hobby1.getId());
+        facade.deleteHobby(p1.getId(), hobby1.getId());
+        facade.deleteHobby(p1.getId(), hobby3.getId());
         int hobbiesafter = p1.getHobbies().size();
+
         assertTrue(hobbiesbefore > hobbiesafter);
+        assertEquals(1, p1.getHobbies().size());
     }
 
     /**
@@ -319,7 +317,7 @@ public class PersonFacadeTest {
         int phonesbefore = p2.getPhones().size();
         p2 = facade.addPhone(p2.getId(), 22334455, "Work phone");
         int phonesafter = p2.getPhones().size();
-        
+
         assertTrue(phonesbefore < phonesafter);
     }
 
@@ -335,21 +333,6 @@ public class PersonFacadeTest {
         p2 = facade.deletePhone(p2.getId(), phone2.getId());
         int phonesafter = p2.getPhones().size();
         assertTrue(phonesbefore > phonesafter);
-    }
-
-    /**
-     * Test of getPersonById method, of class PersonFacade.
-     */
-    @Test
-    public void testGetPersonById() {
-        System.out.println("getPersonById");
-
-        PersonDTO personDTO = facade.getPersonById(p1.getId());
-
-        assertFalse(personDTO == null);
-        assertEquals("jim@gmail.com", personDTO.getEmail());
-        assertEquals("jim", personDTO.getFirstname());
-        assertEquals(2, personDTO.getHobbies().size());
     }
 
 }
