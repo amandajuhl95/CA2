@@ -69,6 +69,11 @@ public class CityInfo implements Serializable {
     public void addAddress(Address address) {
         this.addresses.add(address);
     }
+    
+    public void removeAddress(Address address)
+    {
+        this.addresses.remove(address);
+    }
 
     @Override
     public boolean equals(Object obj) {

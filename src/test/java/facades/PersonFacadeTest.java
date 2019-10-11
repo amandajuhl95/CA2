@@ -249,7 +249,7 @@ public class PersonFacadeTest {
     public void testEditPerson() {
         System.out.println("editPerson");
        
-        PersonDTO person = new PersonDTO("Bob", p1.getLastName(), p1.getEmail(), "Bøllevej", "6", String.valueOf(cityInfo.getZip()), cityInfo.getCity());
+        PersonDTO person = new PersonDTO("Bob", p1.getLastName(), p1.getEmail(), p1.getAddress().getStreet(), p1.getAddress().getAddinfo(), String.valueOf(cityInfo.getZip()), cityInfo.getCity());
         person.setId(p1.getId());
         
         facade.editPerson(person);

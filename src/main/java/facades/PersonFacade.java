@@ -62,7 +62,7 @@ public class PersonFacade {
             Address address;
             List<Address> addressDB = getAddress(p.getStreet(), p.getAddInfo());
             if (addressDB.size() > 0) {
-                address = addressDB.get(0);  
+                address = addressDB.get(0);
             } else {
                 address = new Address(p.getStreet(), p.getAddInfo(), cityInfo);
             }
@@ -130,32 +130,55 @@ public class PersonFacade {
 
         EntityManager em = getEntityManager();
 
+        CityInfo cityInfo;
+        List<CityInfo> cityDB = getCityInfo(p.getCity(), p.getZip());
+        if (cityDB.size() > 0) {
+            cityInfo = cityDB.get(0);
+        } else {
+            cityInfo = new CityInfo(p.getZip(), p.getCity());
+        }
+
+        Address address;
+        List<Address> addressDB = getAddress(p.getStreet(), p.getAddInfo());
+        if (addressDB.size() > 0) {
+            address = addressDB.get(0);
+        } else {
+            address = new Address(p.getStreet(), p.getAddInfo(), cityInfo);
+        }
+
         Person person = em.find(Person.class, p.getId());
         person.setFirstName(p.getFirstname());
         person.setLastName(p.getLastname());
         person.setEmail(p.getEmail());
-        Address oldAddress = person.getAddress();
-        CityInfo info = new CityInfo(p.getZip(), p.getCity());
-        Address newAddress = new Address(p.getStreet(), p.getAddInfo(), info);
 
-//        int numOfPeople = getPersonsByAddress(oldAddress.getStreet(), oldAddress.getAddinfo()).size();
-//        if(numOfPeople == 1)
-//            {
-//                em.remove(p.getStreet()));
-//            }
+        //removing old address relations, for it to be deleted, if no one lives there
+        Address oldAddress = person.getAddress();
+        int numOfPeople = getPersonsByAddress(oldAddress.getStreet(), oldAddress.getAddinfo()).size();
+
+        if (numOfPeople == 1 && !oldAddress.equals(person.getAddress())) {
+            oldAddress.removePerson(person);
+            person.setAddress(address);
+            oldAddress.getCityInfo().removeAddress(oldAddress);
+        }
+
         try {
             em.getTransaction().begin();
 
-            CityInfo mergedCity = em.merge(info);
-            Address mergedAddress = em.merge(newAddress);
+            CityInfo mergedCity = em.merge(cityInfo);
+            Address mergedAddress = em.merge(address);
 
-            newAddress.setCityInfo(mergedCity);
+            address.setCityInfo(mergedCity);
             person.setAddress(mergedAddress);
 
             em.merge(person);
             em.persist(person);
 
+            if (numOfPeople == 1 && !oldAddress.equals(person.getAddress())) {
+                em.remove(oldAddress);
+            }
+
             em.getTransaction().commit();
+
             return new PersonDTO(person);
         } finally {
             em.close();
