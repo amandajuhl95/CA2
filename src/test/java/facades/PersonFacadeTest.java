@@ -1,6 +1,8 @@
 package facades;
 
+import dto.HobbyDTO;
 import dto.PersonDTO;
+import dto.PhoneDTO;
 import entities.Address;
 import entities.CityInfo;
 import entities.Hobby;
@@ -281,10 +283,13 @@ public class PersonFacadeTest {
     public void testAddHobby() {
 
         System.out.println("addHobby");
+        
+        
+        HobbyDTO hobby = new HobbyDTO("Handball", "A team sport. The team with the highest score wins");
 
         int hobbiesbefore = p1.getHobbies().size();
-        p1 = facade.addHobby(p1.getId(), "Handball", "A team sport. The team with the highest score wins");
-        int hobbiesafter = p1.getHobbies().size();
+        PersonDTO p = facade.addHobby(p1.getId(),hobby);
+        int hobbiesafter = p.getHobbies().size();
 
         assertTrue(hobbiesbefore < hobbiesafter);
     }
@@ -314,9 +319,10 @@ public class PersonFacadeTest {
 
         System.out.println("addPhone");
 
+        PhoneDTO phone = new PhoneDTO(22334455, "Work phone");
         int phonesbefore = p2.getPhones().size();
-        p2 = facade.addPhone(p2.getId(), 22334455, "Work phone");
-        int phonesafter = p2.getPhones().size();
+        PersonDTO p = facade.addPhone(p2.getId(), phone);
+        int phonesafter = p.getPhones().size();
 
         assertTrue(phonesbefore < phonesafter);
     }
@@ -330,8 +336,8 @@ public class PersonFacadeTest {
         System.out.println("deletePhone");
 
         int phonesbefore = p2.getPhones().size();
-        p2 = facade.deletePhone(p2.getId(), phone2.getId());
-        int phonesafter = p2.getPhones().size();
+        PersonDTO p = facade.deletePhone(p2.getId(), phone2.getId());
+        int phonesafter = p.getPhones().size();
         assertTrue(phonesbefore > phonesafter);
     }
 

@@ -1,6 +1,8 @@
 package facades;
 
+import dto.HobbyDTO;
 import dto.PersonDTO;
+import dto.PhoneDTO;
 import entities.Address;
 import entities.CityInfo;
 import entities.Hobby;
@@ -51,6 +53,7 @@ public class PersonFacade {
         try {
             em.getTransaction().begin();
 
+            //Checking if cityinfo already exsists in Database
             CityInfo cityInfo;
             List<CityInfo> cityDB = getCityInfo(p.getCity(), p.getZip());
             if (cityDB.size() > 0) {
@@ -59,20 +62,21 @@ public class PersonFacade {
                 cityInfo = new CityInfo(p.getZip(), p.getCity());
             }
 
+            //Checking if address already exsists in Database
             Address address;
-            List<Address> addressDB = getAddress(p.getStreet(), p.getAddInfo());
+            List<Address> addressDB = getAddress(p.getStreet(), p.getAddInfo(), p.getCity(), p.getZip());
             if (addressDB.size() > 0) {
                 address = addressDB.get(0);
             } else {
                 address = new Address(p.getStreet(), p.getAddInfo(), cityInfo);
             }
 
+            //Merging city and address
             CityInfo mergedCity = em.merge(cityInfo);
             Address mergedAddress = em.merge(address);
             mergedAddress.setCityInfo(mergedCity);
-            //cityInfo.removeAddress(address);
-            
-            Person person = new Person(p.getEmail(), p.getFirstname(), p.getLastname(), mergedAddress); 
+
+            Person person = new Person(p.getEmail(), p.getFirstname(), p.getLastname(), mergedAddress);
             person.setAddress(mergedAddress);
 
             em.persist(person);
@@ -95,12 +99,12 @@ public class PersonFacade {
         return cityInfo;
     }
 
-    private List<Address> getAddress(String street, String addinfo) {
+    private List<Address> getAddress(String street, String addinfo, String city, int zip) {
 
         EntityManager em = getEntityManager();
         List<Address> adr;
-        TypedQuery<Address> query = em.createQuery("SELECT a FROM Address a WHERE a.street = :street AND a.addinfo = :addinfo", Address.class);
-        adr = query.setParameter("street", street).setParameter("addinfo", addinfo).getResultList();
+        TypedQuery<Address> query = em.createQuery("SELECT a FROM Address a INNER JOIN a.cityInfo c WHERE a.street = :street AND a.addinfo = :addinfo AND c.city = :city AND c.zip = :zip", Address.class);
+        adr = query.setParameter("street", street).setParameter("addinfo", addinfo).setParameter("city", city).setParameter("zip", zip).getResultList();
         return adr;
     }
 
@@ -141,7 +145,7 @@ public class PersonFacade {
 
         //Checking if address already exsists in Database
         Address address;
-        List<Address> addressDB = getAddress(p.getStreet(), p.getAddInfo());
+        List<Address> addressDB = getAddress(p.getStreet(), p.getAddInfo(), p.getCity(), p.getZip());
         if (addressDB.size() > 0) {
             address = addressDB.get(0);
         } else {
@@ -165,12 +169,12 @@ public class PersonFacade {
 
         try {
             em.getTransaction().begin();
-            
+
             //Merging the new address and city
             CityInfo mergedCity = em.merge(cityInfo);
             Address mergedAddress = em.merge(address);
 
-            //
+            //Merging address and city
             mergedAddress.setCityInfo(mergedCity);
             person.setAddress(mergedAddress);
 
@@ -190,46 +194,42 @@ public class PersonFacade {
 
     }
 
-    public Person addHobby(long person_id, String name, String description) {
+    public PersonDTO addHobby(long person_id, HobbyDTO h) {
 
         EntityManager em = getEntityManager();
-
-//        boolean found = false;
-//
+        
         Person person = em.find(Person.class, person_id);
-//        for (Hobby hobby : getAllHobbies()) {
-//            if(hobby.getName().equals(name))
-//            {
-//                person.addHobby(hobby);
-//                found = true;
-//            }
-//        }
-//        if(!found)
-//        {
-        Hobby add = new Hobby(name, description);
-        person.addHobby(add);
-//        }
+        
+        Hobby hobby;
+        List<Hobby> hobbies = getHobby(h.getHobby());
+        if (hobbies.size() > 0) {
+            hobby = hobbies.get(0);
+        } else {
+            hobby = new Hobby(h.getHobby().toLowerCase(), h.getDescription());
+        }
+
+        person.addHobby(hobby);
 
         try {
             em.getTransaction().begin();
             em.merge(person);
             em.persist(person);
             em.getTransaction().commit();
-            return person;
+            return new PersonDTO(person);
         } finally {
             em.close();
         }
     }
 
-    private List<Hobby> getAllHobbies() {
+    private List<Hobby> getHobby(String hobby) {
         EntityManager em = getEntityManager();
 
-        TypedQuery<Hobby> query = em.createQuery("SELECT h FROM Hobby h", Hobby.class);
-        return query.getResultList();
+        TypedQuery<Hobby> query = em.createQuery("SELECT h FROM Hobby h WHERE h.name = :name", Hobby.class);
+        return query.setParameter("name", hobby).getResultList();
 
     }
 
-    public Person deleteHobby(Long person_id, Long hobby_id) {
+    public PersonDTO deleteHobby(Long person_id, Long hobby_id) {
 
         EntityManager em = getEntityManager();
 
@@ -237,39 +237,61 @@ public class PersonFacade {
         Hobby hobby = em.find(Hobby.class, hobby_id);
         person.removeHobby(hobby);
 
+        int numOfPeople = getPersonCountByHobby(hobby.getName());
+
         try {
             em.getTransaction().begin();
             em.merge(person);
-            em.persist(person);
+            
+            if (numOfPeople == 1) {
+                em.remove(hobby);
+            }
             em.getTransaction().commit();
         } finally {
             em.close();
         }
 
-        return person;
+        return new PersonDTO(person);
 
     }
 
-    public Person addPhone(long person_id, int number, String description) {
+    public PersonDTO addPhone(long person_id, PhoneDTO ph) {
 
         EntityManager em = getEntityManager();
 
         Person person = em.find(Person.class, person_id);
-        Phone phone = new Phone(number, description);
+        
+        Phone phone;
+        List<Phone> phones = getPhones(ph.getPhone());
+        if (phones.size() > 0) {
+            
+          throw new WebApplicationException("Phonenumber is already in use", 400);
+                  
+        } else {
+            phone = new Phone(ph.getPhone(), ph.getDescription());
+        }
         person.addPhone(phone);
 
         try {
             em.getTransaction().begin();
             em.merge(person);
-            em.persist(person);
             em.getTransaction().commit();
-            return person;
+            
+            return new PersonDTO(person);
         } finally {
             em.close();
         }
     }
+    
+    private List<Phone> getPhones(int phone) {
+        EntityManager em = getEntityManager();
 
-    public Person deletePhone(long person_id, Long phone_id) {
+        TypedQuery<Phone> query = em.createQuery("SELECT p FROM Phone p WHERE p.number = :number", Phone.class);
+        return query.setParameter("number", phone).getResultList();
+
+    }
+
+    public PersonDTO deletePhone(long person_id, Long phone_id) {
 
         EntityManager em = getEntityManager();
 
@@ -287,7 +309,7 @@ public class PersonFacade {
         } finally {
             em.close();
         }
-        return person;
+        return new PersonDTO(person);
     }
 
     public PersonDTO getPersonById(long id) {
