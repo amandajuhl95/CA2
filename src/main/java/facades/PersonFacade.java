@@ -87,47 +87,6 @@ public class PersonFacade {
         } finally {
             em.close();
         }
-
-    }
-
-    private List<CityInfo> getCityInfo(String city, int zip) {
-
-        EntityManager em = getEntityManager();
-        List<CityInfo> cityInfo;
-        TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c WHERE c.zip = :zip AND c.city = :city", CityInfo.class);
-        cityInfo = query.setParameter("zip", zip).setParameter("city", city).getResultList();
-        return cityInfo;
-    }
-
-    private List<Address> getAddress(String street, String addinfo, String city, int zip) {
-
-        EntityManager em = getEntityManager();
-        List<Address> adr;
-        TypedQuery<Address> query = em.createQuery("SELECT a FROM Address a INNER JOIN a.cityInfo c WHERE a.street = :street AND a.addinfo = :addinfo AND c.city = :city AND c.zip = :zip", Address.class);
-        adr = query.setParameter("street", street).setParameter("addinfo", addinfo).setParameter("city", city).setParameter("zip", zip).getResultList();
-        return adr;
-    }
-
-    public void deletePerson(long person_id) throws WebApplicationException {
-
-        EntityManager em = getEntityManager();
-        Person person;
-
-        try {
-            em.getTransaction().begin();
-            person = em.find(Person.class, person_id);
-            int numOfPeople = getPersonsByAddress(person.getAddress().getStreet(), person.getAddress().getAddinfo()).size();
-            if (numOfPeople == 1) {
-                em.remove(person.getAddress());
-            }
-
-            em.remove(person);
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            throw new WebApplicationException("Could not delete person", 400);
-        } finally {
-            em.close();
-        }
     }
 
     public PersonDTO editPerson(PersonDTO p) {
@@ -196,6 +155,189 @@ public class PersonFacade {
         } finally {
             em.close();
         }
+    }
+    
+    private List<CityInfo> getCityInfo(String city, int zip) {
+
+        EntityManager em = getEntityManager();
+        List<CityInfo> cityInfo;
+        TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c WHERE c.zip = :zip AND c.city = :city", CityInfo.class);
+        cityInfo = query.setParameter("zip", zip).setParameter("city", city).getResultList();
+        return cityInfo;
+    }
+
+    private List<Address> getAddress(String street, String addinfo, String city, int zip) {
+
+        EntityManager em = getEntityManager();
+        List<Address> adr;
+        TypedQuery<Address> query = em.createQuery("SELECT a FROM Address a INNER JOIN a.cityInfo c WHERE a.street = :street AND a.addinfo = :addinfo AND c.city = :city AND c.zip = :zip", Address.class);
+        adr = query.setParameter("street", street).setParameter("addinfo", addinfo).setParameter("city", city).setParameter("zip", zip).getResultList();
+        return adr;
+    }
+
+    public void deletePerson(long person_id) throws WebApplicationException {
+
+        EntityManager em = getEntityManager();
+        Person person;
+
+        try {
+            em.getTransaction().begin();
+            person = em.find(Person.class, person_id);
+            int numOfPeople = getPersonsByAddress(person.getAddress().getStreet(), person.getAddress().getAddinfo()).size();
+            if (numOfPeople == 1) {
+                em.remove(person.getAddress());
+            }
+
+            em.remove(person);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            throw new WebApplicationException("Could not delete person", 400);
+        } finally {
+            em.close();
+        }
+    }
+
+    public PersonDTO getPerson(int number) {
+
+        EntityManager em = getEntityManager();
+
+        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.phones ph WHERE ph.number = :number", Person.class);
+        Person person = query.setParameter("number", number).getSingleResult();
+        if (person == null) {
+            throw new WebApplicationException("No person with the given id was found");
+        }
+
+        PersonDTO personDTO = new PersonDTO(person);
+
+        return personDTO;
+    }
+
+    public PersonDTO getPersonById(long id) {
+
+        EntityManager em = getEntityManager();
+
+        try {
+            Person person = em.find(Person.class, id);
+            PersonDTO personDTO = new PersonDTO(person);
+            return personDTO;
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<PersonDTO> getAllPersons() {
+        EntityManager em = getEntityManager();
+
+        List<PersonDTO> personsDTO = new ArrayList();
+
+        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p", Person.class);
+        List<Person> persons = query.getResultList();
+
+        for (Person person : persons) {
+            personsDTO.add(new PersonDTO(person));
+        }
+
+        return personsDTO;
+    }
+
+    public List<PersonDTO> getPersonsByCity(String city) {
+
+        EntityManager em = getEntityManager();
+
+        CityInfo cityInfo = getCityInfo(city);
+        List<PersonDTO> personsDTO = new ArrayList();
+
+        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.address a WHERE a.cityInfo.id = :city", Person.class);
+        List<Person> persons = query.setParameter("city", cityInfo.getId()).getResultList();
+
+        for (Person person : persons) {
+            personsDTO.add(new PersonDTO(person));
+
+        }
+        return personsDTO;
+    }
+
+    public List<PersonDTO> getPersonsByAddress(String street, String addinfo) {
+
+        EntityManager em = getEntityManager();
+
+        List<PersonDTO> personsDTO = new ArrayList();
+
+        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.address a WHERE a.street = :street AND a.addinfo = :addinfo", Person.class);
+        List<Person> persons = query.setParameter("street", street).setParameter("addinfo", addinfo).getResultList();
+
+        for (Person person : persons) {
+            personsDTO.add(new PersonDTO(person));
+
+        }
+        return personsDTO;
+    }
+
+    //This method is only used for check in in the Rest endpoints editperson and addperson
+    public List<PersonDTO> getPersonByEmail(String email) {
+        EntityManager em = getEntityManager();
+
+        List<PersonDTO> personsDTO = new ArrayList();
+
+        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p WHERE p.email = :email", Person.class);
+        List<Person> persons = query.setParameter("email", email).getResultList();
+
+        for (Person person : persons) {
+            personsDTO.add(new PersonDTO(person));
+
+        }
+        return personsDTO;
+    }
+
+    public List<PersonDTO> getPersonsByHobby(String hobby) {
+
+        EntityManager em = getEntityManager();
+
+        List<PersonDTO> personsDTO = new ArrayList();
+
+        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.hobbies pho WHERE pho.name = :hobby", Person.class);
+        List<Person> persons = query.setParameter("hobby", hobby).getResultList();
+
+        for (Person person : persons) {
+            personsDTO.add(new PersonDTO(person));
+        }
+        return personsDTO;
+    }
+
+    public int getPersonCountByHobby(String hobby) {
+
+        EntityManager em = getEntityManager();
+
+        Query query = em.createQuery("SELECT COUNT(p) FROM Person p INNER JOIN p.hobbies pho WHERE pho.name = :hobby");
+        long c = (long) query.setParameter("hobby", hobby).getSingleResult();
+        int count = (int) c;
+        return count;
+    }
+
+    public CityInfo getCityInfo(String city) {
+
+        EntityManager em = getEntityManager();
+
+        if (city.matches("[0-9]+")) {
+            int zip = Integer.parseInt(city);
+            TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c WHERE c.zip = :zip", CityInfo.class);
+            CityInfo cityInfo = query.setParameter("zip", zip).getSingleResult();
+            return cityInfo;
+        } else {
+            TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c WHERE c.city = :city", CityInfo.class);
+            CityInfo cityInfo = query.setParameter("city", city).getSingleResult();
+            return cityInfo;
+        }
+
+    }
+
+    public List<Integer> getZipcodes() {
+
+        EntityManager em = getEntityManager();
+
+        Query query = em.createQuery("SELECT c.zip FROM CityInfo c");
+        List<Integer> zipcodes = query.getResultList();
+        return zipcodes;
 
     }
 
@@ -226,14 +368,6 @@ public class PersonFacade {
         } finally {
             em.close();
         }
-    }
-
-    public List<Hobby> getHobby(String hobby) {
-        EntityManager em = getEntityManager();
-
-        TypedQuery<Hobby> query = em.createQuery("SELECT h FROM Hobby h WHERE h.name = :name", Hobby.class);
-        return query.setParameter("name", hobby).getResultList();
-
     }
 
     public PersonDTO deleteHobby(Long person_id, Long hobby_id) {
@@ -274,6 +408,14 @@ public class PersonFacade {
         return new PersonDTO(person);
 
     }
+    
+    public List<Hobby> getHobby(String hobby) {
+        EntityManager em = getEntityManager();
+
+        TypedQuery<Hobby> query = em.createQuery("SELECT h FROM Hobby h WHERE h.name = :name", Hobby.class);
+        return query.setParameter("name", hobby).getResultList();
+
+    }
 
     public PersonDTO addPhone(long person_id, PhoneDTO ph) {
 
@@ -304,14 +446,6 @@ public class PersonFacade {
         } finally {
             em.close();
         }
-    }
-
-    private List<Phone> getPhones(int phone) {
-        EntityManager em = getEntityManager();
-
-        TypedQuery<Phone> query = em.createQuery("SELECT p FROM Phone p WHERE p.number = :number", Phone.class);
-        return query.setParameter("number", phone).getResultList();
-
     }
 
     public PersonDTO deletePhone(long person_id, long phone_id) {
@@ -345,151 +479,13 @@ public class PersonFacade {
         }
         return new PersonDTO(person);
     }
-
-    public PersonDTO getPersonById(long id) {
-
-        EntityManager em = getEntityManager();
-
-        try {
-            Person person = em.find(Person.class, id);
-            PersonDTO personDTO = new PersonDTO(person);
-            return personDTO;
-        } finally {
-            em.close();
-        }
-    }
-
-    public PersonDTO getPerson(int number) {
-
-        EntityManager em = getEntityManager();
-
-        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.phones ph WHERE ph.number = :number", Person.class);
-        Person person = query.setParameter("number", number).getSingleResult();
-        if (person == null) {
-            throw new WebApplicationException("No person with the given id was found");
-        }
-        
-        PersonDTO personDTO = new PersonDTO(person);
-
-        return personDTO;
-    }
-
-    public List<PersonDTO> getAllPersons() {
-        EntityManager em = getEntityManager();
-
-        List<PersonDTO> personsDTO = new ArrayList();
-
-        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p", Person.class);
-        List<Person> persons = query.getResultList();
-
-        for (Person person : persons) {
-            personsDTO.add(new PersonDTO(person));
-        }
-
-        return personsDTO;
-    }
-
-    public List<PersonDTO> getPersonsByHobby(String hobby) {
-
-        EntityManager em = getEntityManager();
-
-        List<PersonDTO> personsDTO = new ArrayList();
-
-        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.hobbies pho WHERE pho.name = :hobby", Person.class);
-        List<Person> persons = query.setParameter("hobby", hobby).getResultList();
-
-        for (Person person : persons) {
-            personsDTO.add(new PersonDTO(person));
-        }
-        return personsDTO;
-    }
-
-    public CityInfo getCityInfo(String city) {
-
-        EntityManager em = getEntityManager();
-
-        if (city.matches("[0-9]+")) {
-            int zip = Integer.parseInt(city);
-            TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c WHERE c.zip = :zip", CityInfo.class);
-            CityInfo cityInfo = query.setParameter("zip", zip).getSingleResult();
-            return cityInfo;
-        } else {
-            TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c WHERE c.city = :city", CityInfo.class);
-            CityInfo cityInfo = query.setParameter("city", city).getSingleResult();
-            return cityInfo;
-        }
-
-    }
-
-    public List<PersonDTO> getPersonsByCity(String city) {
-
-        EntityManager em = getEntityManager();
-
-        CityInfo cityInfo = getCityInfo(city);
-        List<PersonDTO> personsDTO = new ArrayList();
-
-        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.address a WHERE a.cityInfo.id = :city", Person.class);
-        List<Person> persons = query.setParameter("city", cityInfo.getId()).getResultList();
-
-        for (Person person : persons) {
-            personsDTO.add(new PersonDTO(person));
-
-        }
-        return personsDTO;
-    }
-
-    public int getPersonCountByHobby(String hobby) {
-
-        EntityManager em = getEntityManager();
-
-        Query query = em.createQuery("SELECT COUNT(p) FROM Person p INNER JOIN p.hobbies pho WHERE pho.name = :hobby");
-        long c = (long) query.setParameter("hobby", hobby).getSingleResult();
-        int count = (int) c;
-        return count;
-    }
-
-    public List<Integer> getZipcodes() {
-
-        EntityManager em = getEntityManager();
-
-        Query query = em.createQuery("SELECT c.zip FROM CityInfo c");
-        List<Integer> zipcodes = query.getResultList();
-        return zipcodes;
-
-    }
-
-    public List<PersonDTO> getPersonsByAddress(String street, String addinfo) {
-
-        EntityManager em = getEntityManager();
-
-        List<PersonDTO> personsDTO = new ArrayList();
-
-        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.address a WHERE a.street = :street AND a.addinfo = :addinfo", Person.class);
-        List<Person> persons = query.setParameter("street", street).setParameter("addinfo", addinfo).getResultList();
-
-        for (Person person : persons) {
-            personsDTO.add(new PersonDTO(person));
-
-        }
-        return personsDTO;
-    }
     
-    public List<PersonDTO> getPersonByEmail(String email)
-    {
+     private List<Phone> getPhones(int phone) {
         EntityManager em = getEntityManager();
 
-        List<PersonDTO> personsDTO = new ArrayList();
+        TypedQuery<Phone> query = em.createQuery("SELECT p FROM Phone p WHERE p.number = :number", Phone.class);
+        return query.setParameter("number", phone).getResultList();
 
-        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p WHERE p.email = :email", Person.class);
-        List<Person> persons = query.setParameter("email", email).getResultList();
-
-        for (Person person : persons) {
-            personsDTO.add(new PersonDTO(person));
-
-        }
-        return personsDTO;
-        
-        
     }
 
 }

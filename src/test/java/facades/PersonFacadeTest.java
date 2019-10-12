@@ -210,39 +210,13 @@ public class PersonFacadeTest {
     }
 
     /**
-     * Test of getPersonCountByHobby method, of class PersonFacade.
-     */
-    @Test
-    public void testGetPersonCountByHobby() {
-        System.out.println("getPersonCountByHobby");
-        String hobby = "jumping";
-
-        long expResult = 2;
-        long result = facade.getPersonCountByHobby(hobby);
-        assertEquals(expResult, result);
-
-    }
-
-    /**
      * Test of getAllPersons method, of class PersonFacade.
      */
     @Test
     public void testGetAllPersons() {
 
-    }
-
-    /**
-     * Test of getPersonsByHobby method, of class PersonFacade.
-     */
-    @Test
-    public void testGetPersonsByHobby() {
-        System.out.println("getPersonsByHobby");
-        String hobby = "jumping";
-
-        int expResult = 2;
-        int result = facade.getPersonsByHobby(hobby).size();
-        assertEquals(expResult, result);
-
+        List<PersonDTO> persons = facade.getAllPersons();
+        assertEquals(persons.size(), 2);
     }
 
     /**
@@ -270,6 +244,47 @@ public class PersonFacadeTest {
 
         List<PersonDTO> persondto = facade.getPersonsByAddress(street, addinfo);
         assertEquals(1, persondto.size());
+
+    }
+    
+    /**
+     * Test of getPersonsByHobby method, of class PersonFacade.
+     */
+    @Test
+    public void testGetPersonsByHobby() {
+        System.out.println("getPersonsByHobby");
+        String hobby = "jumping";
+
+        int expResult = 2;
+        int result = facade.getPersonsByHobby(hobby).size();
+        assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of getPersonCountByHobby method, of class PersonFacade.
+     */
+    @Test
+    public void testGetPersonCountByHobby() {
+        System.out.println("getPersonCountByHobby");
+        String hobby = "jumping";
+
+        long expResult = 2;
+        long result = facade.getPersonCountByHobby(hobby);
+        assertEquals(expResult, result);
+
+    }
+
+    /**
+     * Test of getCityInfo method, of class PersonFacade.
+     */
+    @Test
+    public void testGetCityInfo() {
+
+        CityInfo city = facade.getCityInfo(cityInfo.getCity());
+        assertEquals(city.getZip(), cityInfo.getZip());
+
+        city = facade.getCityInfo(String.valueOf(cityInfo.getZip()));
+        assertEquals(city.getCity(), cityInfo.getCity());
 
     }
 
@@ -336,7 +351,7 @@ public class PersonFacadeTest {
         hobbiesafter = person.getHobbies().size();
         assertTrue(hobbiesbefore > hobbiesafter);
         assertEquals(1, person.getHobbies().size());
-        
+
         //Testing that tying to delete a hobby not connected to the person will throw an exception
         try {
             facade.deleteHobby(p1.getId(), 333L);
@@ -387,8 +402,7 @@ public class PersonFacadeTest {
         PersonDTO p = facade.deletePhone(p1.getId(), phone1.getId());
         int phonesafter = p.getPhones().size();
         assertTrue(phonesbefore > phonesafter);
- 
-        
+
         //Testing that tying to delete a phonenumber not connected to the person will throw an exception
         try {
             facade.deletePhone(p1.getId(), phone2.getId());
@@ -398,20 +412,6 @@ public class PersonFacadeTest {
             assertEquals(ex.getMessage(), "The phone is not found in " + p1.getFirstName() + " " + p1.getLastName() + "'s phonelist");
 
         }
-    }
-
-    /**
-     * Test of getCityInfo method, of class PersonFacade.
-     */
-    @Test
-    public void testGetCityInfo() {
-        
-        CityInfo city = facade.getCityInfo(cityInfo.getCity());
-        assertEquals(city.getZip(), cityInfo.getZip());
-        
-        city = facade.getCityInfo(String.valueOf(cityInfo.getZip()));
-        assertEquals(city.getCity(), cityInfo.getCity());
-
     }
 
 }
