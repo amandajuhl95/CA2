@@ -409,6 +409,7 @@ public class PersonFacade {
 
     }
     
+    //This method is only public for use in test
     public List<Hobby> getHobby(String hobby) {
         EntityManager em = getEntityManager();
 

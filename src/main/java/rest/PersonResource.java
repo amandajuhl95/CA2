@@ -71,7 +71,13 @@ public class PersonResource {
     
     public PersonDTO getPerson(@PathParam("id") long id) {
 
-        return FACADE.getPersonById(id);
+        PersonDTO p = FACADE.getPersonById(id);
+        
+        if (p == null) {
+            throw new WebApplicationException("No person found with the given phonenumber", 400);
+        }
+        
+        return p;
     }
 
     @GET
@@ -92,6 +98,21 @@ public class PersonResource {
         }
 
         return p;
+    }
+    
+    @GET
+    @Path("/all")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Retrieve all persons", tags = {"Person"},
+            responses = {
+                @ApiResponse(
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "The Requested list of persons")})
+
+    public List<PersonDTO> getAllPersons() {
+
+        List<PersonDTO> persons = FACADE.getAllPersons();
+        return persons;
     }
 
     @GET
@@ -162,16 +183,14 @@ public class PersonResource {
             responses = {
                 @ApiResponse(
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-                @ApiResponse(responseCode = "200", description = "The list of all zipcodes in denmark"),
-                @ApiResponse(responseCode = "400", description = "The list of zipcodes not is found")})
+                @ApiResponse(responseCode = "200", description = "The list of all zipcodes in denmark")})
 
-    public List<Integer> AllZipCodesInDenmark() {
+    public List<Integer> allZipCodesInDenmark() {
 
         return FACADE.getZipcodes();
     }
 
     @DELETE
-    @Path("/delete/{id}")
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Delete a person with a given id", tags = {"Person"},
             responses = {
@@ -180,7 +199,7 @@ public class PersonResource {
                 @ApiResponse(responseCode = "200", description = "The person is deleted"),
                 @ApiResponse(responseCode = "400", description = "The person was not found and therefor not deleted")})
 
-    public String DeleteUser(@PathParam("id") long id) {
+    public String deletePerson(@PathParam("id") long id) {
 
         if (id == 0) {
 
@@ -193,7 +212,6 @@ public class PersonResource {
     }
 
     @PUT
-    @Path("/edit/{id}")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Edit a person with a given id", tags = {"Person"},
@@ -203,7 +221,7 @@ public class PersonResource {
                 @ApiResponse(responseCode = "200", description = "The person is edited"),
                 @ApiResponse(responseCode = "400", description = "The person is NOT edited")})
 
-    public PersonDTO EditUser(@PathParam("id") long id, String personAsJSON) {
+    public PersonDTO editPerson(@PathParam("id") long id, String personAsJSON) {
 
         PersonDTO person = GSON.fromJson(personAsJSON, PersonDTO.class);
 
@@ -376,21 +394,20 @@ public class PersonResource {
     @Operation(summary = "Delete a hobby from a person", tags = {"Person"},
             responses = {
                 @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-                @ApiResponse(responseCode = "200", description = "The hobby has been deleted from the person"),
-                @ApiResponse(responseCode = "400", description = "The hobby was not found and therefor not deleted")
+                @ApiResponse(responseCode = "200", description = "A hobby has been deleted from the person"),
+                @ApiResponse(responseCode = "400", description = "A hobby or the person was not found and therefor not deleted")
             })
 
-    public String deleteHobby(@PathParam("id") long hobby_id, long person_id) {
+    public PersonDTO deleteHobby(@PathParam("id") long person_id, String hobby_id) {
         
-        if(person_id == 0 || hobby_id == 0)
+        long hobby = GSON.fromJson(hobby_id, Long.class);
+        
+        if(person_id == 0 || hobby == 0)
         {
             throw new WebApplicationException("Id not passed correctly", 400);
         }
         
-        FACADE.deleteHobby(person_id, hobby_id);
-        
-        return "{\"status\": \"Hobby has been deleted\"}";
-
+        return FACADE.deleteHobby(person_id, hobby);
     }
     
     @Path("/addphone/{id}")
@@ -408,7 +425,7 @@ public class PersonResource {
 
         PhoneDTO phone = GSON.fromJson(PhoneAsJSON, PhoneDTO.class);
 
-        if (String.valueOf(phone.getPhone()).length() != 8) {
+        if (phone.getPhone() == 0 || String.valueOf(phone.getPhone()).length() != 8) {
 
             throw new WebApplicationException("Not a valid phone number, it must contain 8 digits", 400);
         }
@@ -422,11 +439,34 @@ public class PersonResource {
 
     }
     
-    
+    @Path("/deletephone/{id}")
+    @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Delete a phone from the database connected to the person", tags = {"Person"},
+            responses = {
+                @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "A phone has been deleted from the person"),
+                @ApiResponse(responseCode = "400", description = "A phone or the person was not found and therefor not deleted")
+            })
 
+    public PersonDTO deletePhone(@PathParam("id") long id, String phone_id) {
+
+        long phone = GSON.fromJson(phone_id, Long.class);
+
+        if(id == 0 || phone == 0)
+        {
+            throw new WebApplicationException("Id not passed correctly", 400);
+        }
+
+        return FACADE.deletePhone(id, phone);
+
+    }
+
+    
+//    getpersonsbyadress
+//            
+//            
+//            getpersonby email -- add og edit
 }
 
-
-
-
-//edit the entities in the underlying database
