@@ -75,29 +75,23 @@
         </dependency>
         
         <dependency>
-   <groupId>org.glassfish.jersey.containers</groupId>
-   <artifactId>jersey-container-servlet</artifactId>
-   <version>2.26</version>
-</dependency>
-<dependency>
-   <groupId>org.glassfish.jersey.inject</groupId>
-   <artifactId>jersey-hk2</artifactId>
-   <version>2.26</version>
-</dependency>
-      
-      
-      
-        <dependency>
             <groupId>org.glassfish.jersey.bundles</groupId>
             <artifactId>jaxrs-ri</artifactId>
             <version>2.29</version>
             <!--            <type>zip</type>-->
         </dependency>
         
-        
-        
-        
-        
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet</artifactId>
+            <version>2.26</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>2.26</version>
+        </dependency>
+      
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
