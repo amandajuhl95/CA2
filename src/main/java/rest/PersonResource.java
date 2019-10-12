@@ -58,7 +58,7 @@ public class PersonResource {
     public String demo() {
         return "{\"msg\":\"Hello World\"}";
     }
-    
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -86,9 +86,9 @@ public class PersonResource {
 
             throw new WebApplicationException("Please enter valid email", 400);
         }
-        
+
         List<PersonDTO> persons = FACADE.getPersonByEmail(person.getEmail());
-        
+
         if (persons.size() > 0) {
 
             throw new WebApplicationException("Email is already in use", 400);
@@ -118,11 +118,11 @@ public class PersonResource {
         if (cityByCity.size() > 0 || cityByZip.size() > 0) {
 
             if (cityByCity.isEmpty() && cityByZip.size() > 0) {
-                
+
                 throw new WebApplicationException("Zipcode matches another city", 400);
 
             } else if (cityByCity.size() > 0 && cityByZip.isEmpty()) {
-                
+
                 throw new WebApplicationException("City matches another zipcode", 400);
 
             } else if (!cityByCity.get(0).getId().equals(cityByZip.get(0).getId())) {
@@ -133,7 +133,7 @@ public class PersonResource {
 
         return FACADE.addPerson(person);
     }
-    
+
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -165,9 +165,9 @@ public class PersonResource {
 
             throw new WebApplicationException("Please enter valid email", 400);
         }
-        
+
         List<PersonDTO> persons = FACADE.getPersonByEmail(person.getEmail());
-        
+
         if (persons.size() > 0 && id != persons.get(0).getId()) {
 
             throw new WebApplicationException("Email is already in use", 400);
@@ -190,18 +190,18 @@ public class PersonResource {
 
             throw new WebApplicationException("Zipcode must be 4 digits", 400);
         }
-        
+
         List<CityInfo> cityByCity = FACADE.getCityInfo(person.getCity());
         List<CityInfo> cityByZip = FACADE.getCityInfo(String.valueOf(person.getZip()));
-        
+
         if (cityByCity.size() > 0 || cityByZip.size() > 0) {
 
             if (cityByCity.isEmpty() && cityByZip.size() > 0) {
-                
+
                 throw new WebApplicationException("Zipcode matches another city", 400);
 
             } else if (cityByCity.size() > 0 && cityByZip.isEmpty()) {
-                
+
                 throw new WebApplicationException("City matches another zipcode", 400);
 
             } else if (!cityByCity.get(0).getId().equals(cityByZip.get(0).getId())) {
@@ -213,7 +213,7 @@ public class PersonResource {
         person.setId(id);
         return FACADE.editPerson(person);
     }
-    
+
     @DELETE
     @Path("/{id}")
     @Produces({MediaType.APPLICATION_JSON})
@@ -235,7 +235,7 @@ public class PersonResource {
 
         return "{\"status\": \"Person has been deleted\"}";
     }
-    
+
     @GET
     @Path("/{number}")
     @Produces({MediaType.APPLICATION_JSON})
@@ -246,11 +246,11 @@ public class PersonResource {
                 @ApiResponse(responseCode = "400", description = "Person not found")})
 
     public PersonDTO getPerson(@PathParam("number") int number) {
-        
+
         PersonDTO p = FACADE.getPerson(number);
         return p;
     }
-    
+
     @GET
     @Path("/id/{id}")
     @Produces({MediaType.APPLICATION_JSON})
@@ -259,13 +259,13 @@ public class PersonResource {
                 @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
                 @ApiResponse(responseCode = "200", description = "The Requested Person"),
                 @ApiResponse(responseCode = "400", description = "Person not found")})
-    
+
     public PersonDTO getPerson(@PathParam("id") long id) {
 
         PersonDTO p = FACADE.getPersonById(id);
         return p;
     }
-    
+
     @GET
     @Path("/all")
     @Produces({MediaType.APPLICATION_JSON})
@@ -279,7 +279,7 @@ public class PersonResource {
         List<PersonDTO> persons = FACADE.getAllPersons();
         return persons;
     }
-    
+
     @GET
     @Path("/city/{city}")
     @Produces({MediaType.APPLICATION_JSON})
@@ -338,7 +338,7 @@ public class PersonResource {
             throw new WebApplicationException("Hobby must be defined", 400);
         }
 
-        return "{\"count\":"+ FACADE.getPersonCountByHobby(hobby ) + "}";
+        return "{\"count\":" + FACADE.getPersonCountByHobby(hobby) + "}";
     }
 
     @GET
@@ -349,14 +349,13 @@ public class PersonResource {
                 @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
                 @ApiResponse(responseCode = "200", description = "The list of all zipcodes in denmark")})
 
-    public List<Integer> allZipCodesInDenmark() {
+    public String allZipCodesInDenmark() {
 
-        return FACADE.getZipcodes();
+        return "{\"zipcodes\":" + FACADE.getZipcodes() + "}";
     }
 
-
-    @Path("/addhobby/{id}")
     @POST
+    @Path("/addhobby/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Add a new hobby to the database and connect to the person", tags = {"Person"},
@@ -369,9 +368,8 @@ public class PersonResource {
     public PersonDTO addHobby(@PathParam("id") long person_id, String HobbyAsJSON) {
 
         HobbyDTO hobby = GSON.fromJson(HobbyAsJSON, HobbyDTO.class);
-        
-        if(person_id == 0)
-        {
+
+        if (person_id == 0) {
             throw new WebApplicationException("Id not passed correctly", 400);
         }
 
@@ -388,10 +386,9 @@ public class PersonResource {
         return FACADE.addHobby(person_id, hobby);
 
     }
-    
-    @Path("/deletehobby/{id}")
+
     @DELETE
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/deletehobby/{person_id}/" + "{hobby_id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Delete a hobby from a person", tags = {"Person"},
             responses = {
@@ -400,20 +397,17 @@ public class PersonResource {
                 @ApiResponse(responseCode = "400", description = "A hobby or the person was not found and therefor not deleted")
             })
 
-    public PersonDTO deleteHobby(@PathParam("id") long person_id, String hobby_id) {
-        
-        long hobby = GSON.fromJson(hobby_id, Long.class);
-        
-        if(person_id == 0 || hobby == 0)
-        {
+    public PersonDTO deleteHobby(@PathParam("person_id") long person_id, @PathParam("hobby_id") long hobby_id) {
+
+        if (person_id == 0 || hobby_id == 0) {
             throw new WebApplicationException("Id not passed correctly", 400);
         }
-        
-        return FACADE.deleteHobby(person_id, hobby);
+
+        return FACADE.deleteHobby(person_id, hobby_id);
     }
-    
-    @Path("/addphone/{id}")
+
     @POST
+    @Path("/addphone/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Add a new phone to the database connected to the person", tags = {"Person"},
@@ -426,9 +420,8 @@ public class PersonResource {
     public PersonDTO addPhone(@PathParam("id") long person_id, String PhoneAsJSON) {
 
         PhoneDTO phone = GSON.fromJson(PhoneAsJSON, PhoneDTO.class);
-        
-        if(person_id == 0)
-        {
+
+        if (person_id == 0) {
             throw new WebApplicationException("Id not passed correctly", 400);
         }
 
@@ -445,10 +438,9 @@ public class PersonResource {
         return FACADE.addPhone(person_id, phone);
 
     }
-    
-    @Path("/deletephone/{id}")
+
     @DELETE
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/deletephone/{person_id}/{phone_id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Delete a phone from the database connected to the person", tags = {"Person"},
             responses = {
@@ -457,17 +449,13 @@ public class PersonResource {
                 @ApiResponse(responseCode = "400", description = "A phone or the person was not found and therefor not deleted")
             })
 
-    public PersonDTO deletePhone(@PathParam("id") long person_id, String phone_id) {
+    public PersonDTO deletePhone(@PathParam("person_id") long person_id, @PathParam("phone_id") long phone_id) {
 
-        long phone = GSON.fromJson(phone_id, Long.class);
-
-        if(person_id == 0 || phone == 0)
-        {
+        if (person_id == 0 || phone_id == 0) {
             throw new WebApplicationException("Id not passed correctly", 400);
         }
 
-        return FACADE.deletePhone(person_id, phone);
+        return FACADE.deletePhone(person_id, phone_id);
 
     }
 }
-
