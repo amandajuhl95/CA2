@@ -308,7 +308,7 @@ public class PersonResourceTest {
                 .post("/addhobby/" + p1.getId()).then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
-                .body("hobby", equalTo("testhob"), "description", equalTo("a hobby test description"));
+                .body("hobbies.hobby", hasItems("testhob" ), "hobbies.description", hasItems("a hobby test description"));
     
     }
 }
