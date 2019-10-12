@@ -233,21 +233,6 @@ public class PersonFacadeTest {
     }
 
     /**
-     * Test of getPersonsByAdress method, of class PersonFacade.
-     */
-    @Test
-    public void testGetPersonsByAddress() {
-        System.out.println("getPersonsByAddress");
-
-        String street = "streetname";
-        String addinfo = "4 tv";
-
-        List<PersonDTO> persondto = facade.getPersonsByAddress(street, addinfo);
-        assertEquals(1, persondto.size());
-
-    }
-    
-    /**
      * Test of getPersonsByHobby method, of class PersonFacade.
      */
     @Test

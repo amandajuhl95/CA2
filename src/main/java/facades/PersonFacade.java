@@ -156,7 +156,7 @@ public class PersonFacade {
             em.close();
         }
     }
-    
+
     private List<CityInfo> getCityInfo(String city, int zip) {
 
         EntityManager em = getEntityManager();
@@ -197,6 +197,22 @@ public class PersonFacade {
         }
     }
 
+    private List<PersonDTO> getPersonsByAddress(String street, String addinfo) {
+
+        EntityManager em = getEntityManager();
+
+        List<PersonDTO> personsDTO = new ArrayList();
+
+        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.address a WHERE a.street = :street AND a.addinfo = :addinfo", Person.class);
+        List<Person> persons = query.setParameter("street", street).setParameter("addinfo", addinfo).getResultList();
+
+        for (Person person : persons) {
+            personsDTO.add(new PersonDTO(person));
+
+        }
+        return personsDTO;
+    }
+
     public PersonDTO getPerson(int number) {
 
         EntityManager em = getEntityManager();
@@ -204,12 +220,13 @@ public class PersonFacade {
         TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.phones ph WHERE ph.number = :number", Person.class);
         Person person = query.setParameter("number", number).getSingleResult();
         if (person == null) {
-            throw new WebApplicationException("No person with the given id was found");
+            throw new WebApplicationException("No person found with the given phonenumber", 400);
         }
 
         PersonDTO personDTO = new PersonDTO(person);
 
         return personDTO;
+
     }
 
     public PersonDTO getPersonById(long id) {
@@ -218,6 +235,9 @@ public class PersonFacade {
 
         try {
             Person person = em.find(Person.class, id);
+            if (person == null) {
+                throw new WebApplicationException("No person found with the given id", 400);
+            }
             PersonDTO personDTO = new PersonDTO(person);
             return personDTO;
         } finally {
@@ -249,22 +269,6 @@ public class PersonFacade {
 
         TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.address a WHERE a.cityInfo.id = :city", Person.class);
         List<Person> persons = query.setParameter("city", cityInfo.getId()).getResultList();
-
-        for (Person person : persons) {
-            personsDTO.add(new PersonDTO(person));
-
-        }
-        return personsDTO;
-    }
-
-    public List<PersonDTO> getPersonsByAddress(String street, String addinfo) {
-
-        EntityManager em = getEntityManager();
-
-        List<PersonDTO> personsDTO = new ArrayList();
-
-        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.address a WHERE a.street = :street AND a.addinfo = :addinfo", Person.class);
-        List<Person> persons = query.setParameter("street", street).setParameter("addinfo", addinfo).getResultList();
 
         for (Person person : persons) {
             personsDTO.add(new PersonDTO(person));
@@ -328,7 +332,6 @@ public class PersonFacade {
             CityInfo cityInfo = query.setParameter("city", city).getSingleResult();
             return cityInfo;
         }
-
     }
 
     public List<Integer> getZipcodes() {
@@ -408,7 +411,7 @@ public class PersonFacade {
         return new PersonDTO(person);
 
     }
-    
+
     //This method is only public for use in test
     public List<Hobby> getHobby(String hobby) {
         EntityManager em = getEntityManager();
@@ -480,8 +483,8 @@ public class PersonFacade {
         }
         return new PersonDTO(person);
     }
-    
-     private List<Phone> getPhones(int phone) {
+
+    private List<Phone> getPhones(int phone) {
         EntityManager em = getEntityManager();
 
         TypedQuery<Phone> query = em.createQuery("SELECT p FROM Phone p WHERE p.number = :number", Phone.class);
