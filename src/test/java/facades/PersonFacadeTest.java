@@ -265,11 +265,11 @@ public class PersonFacadeTest {
     @Test
     public void testGetCityInfo() {
 
-        CityInfo city = facade.getCityInfo(cityInfo.getCity());
-        assertEquals(city.getZip(), cityInfo.getZip());
+        List<CityInfo> city = facade.getCityInfo(cityInfo.getCity());
+        assertEquals(city.get(0).getZip(), cityInfo.getZip());
 
         city = facade.getCityInfo(String.valueOf(cityInfo.getZip()));
-        assertEquals(city.getCity(), cityInfo.getCity());
+        assertEquals(city.get(0).getCity(), cityInfo.getCity());
 
     }
 

@@ -1,5 +1,6 @@
 package rest;
 
+import dto.PersonDTO;
 import entities.Address;
 import entities.CityInfo;
 import entities.Hobby;
@@ -19,6 +20,7 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import org.junit.After;
@@ -82,7 +84,7 @@ public class PersonResourceTest {
     public void setUp() {
 
         EntityManager em = emf.createEntityManager();
-        
+
         cityInfo = new CityInfo(2200, "testTown");
 
         address1 = new Address("streetname", "4 tv", cityInfo);
@@ -102,8 +104,8 @@ public class PersonResourceTest {
         p1.addPhone(phone1);
 
         cityInfo.addAddress(address2);
-        p2.addHobby(hobby2);
         p2.addHobby(hobby1);
+        p2.addHobby(hobby2);
         p2.addPhone(phone2);
 
         try {
@@ -125,28 +127,6 @@ public class PersonResourceTest {
 
     }
 
-    private List<String> hobbyToString(List<Hobby> hobbies) {
-        List<String> hobbyNames = new ArrayList();
-
-        for (Hobby hobby : hobbies) {
-
-            hobbyNames.add(hobby.getName());
-        }
-
-        return hobbyNames;
-    }
-
-    private List<String> phoneToString(List<Phone> phones) {
-        List<String> phoneNumbers = new ArrayList();
-
-        for (Phone phone : phones) {
-
-            phoneNumbers.add(String.valueOf(phone.getNumber()));
-        }
-
-        return phoneNumbers;
-    }
-
     @Test
     public void testServerIsUp() {
         System.out.println("Testing is server UP");
@@ -154,11 +134,11 @@ public class PersonResourceTest {
     }
 
     /**
-     * Test of getPerson method, of class PersonResource.
+     * Test of getPerson method by phonenumber, of class PersonResource.
      */
     @Test
-    public void testGetPerson() {
-        System.out.println("getPerson");
+    public void testGetPersonByNumber() {
+        System.out.println("getPersonByNumber");
         given()
                 .contentType("application/json")
                 .get("/person/22112211").then()
@@ -166,6 +146,23 @@ public class PersonResourceTest {
                 .statusCode(HttpStatus.OK_200.getStatusCode())
                 .body("firstname", equalTo(p1.getFirstName()),
                         "lastname", equalTo(p1.getLastName()),
+                        "hobbies.hobby", hasItems("programming"),
+                        "hobbies.hobby", hasItems("handball"));
+    }
+
+    /**
+     * Test of getPerson method by id, of class PersonResource.
+     */
+    @Test
+    public void testGetPersonById() {
+        System.out.println("getPersonById");
+        given()
+                .contentType("application/json")
+                .get("/person/id/" + p2.getId()).then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("firstname", equalTo(p2.getFirstName()),
+                        "lastname", equalTo(p2.getLastName()),
                         "hobbies.hobby", hasItems("programming"));
     }
 
@@ -175,7 +172,8 @@ public class PersonResourceTest {
     @Test
     public void testGetPersonsByHobby() {
         System.out.println("getPersonsByHobby");
-        given()
+        
+                given()
                 .contentType("application/json")
                 .get("/person/hobby/programming").then()
                 .assertThat()
@@ -204,63 +202,60 @@ public class PersonResourceTest {
 //                        "hobbies.hobby", hasItems(hobbyToString(p1.getHobbies()),
 //                                hobbyToString(p2.getHobbies())));
 //    }
-
-//    /**
-//     * Test of getNumberOfPersonsWithHobby method, of class PersonResource.
-//     */
-//    @Test
-//    public void testGetPersonCountByHobby() {
-//        System.out.println("getPersonCountByHobby");
-//           given()
-//                .contentType("application/json")
-//                .get("/person/count/programming").then()
-//                .assertThat()
-//                .statusCode(HttpStatus.OK_200.getStatusCode())
-//                .body(equalTo((int) 2));
-//    }
     
-//
+    /**
+     * Test of getNumberOfPersonsWithHobby method, of class PersonResource.
+     */
+    @Test
+    public void testGetPersonCountByHobby() {
+        System.out.println("getPersonCountByHobby");
+           
+        given().contentType("application/json")
+                .get("/person/count/programming").then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("count", equalTo(2));
+    }
+
 //    /**
 //     * Test of AllZipCodesInDenmark method, of class PersonResource.
 //     */
 //    @Test
 //    public void testAllZipCodesInDenmark() {
 //        System.out.println("AllZipCodesInDenmark");
-//         given()
-//                .contentType("application/json")
-//                .get("/Person/allzip").then()
+//        
+//        given().contentType("application/json")
+//                .get("/person/zipcodes").then()
 //                .assertThat()
 //                .statusCode(HttpStatus.OK_200.getStatusCode())
-//                .body("hobby", hasItems("Somezip", 
-//                        "Somezip",
-//                        "Somezip"));
+//                .body(contains(2200));
 //    }
-//
-//    /**
-//     * Test of DeleteUser method, of class PersonResource.
-//     */
+
+    /**
+     * Test of DeletePerson method, of class PersonResource.
+     */
     @Test
-    public void testDeleteUser() {
-        System.out.println("DeleteUser");
-        
+    public void testDeletePerson() {
+        System.out.println("DeletePerson");
+
         given().contentType("application/json")
-                .delete("/person/delete/" + p1.getId()).then()
+                .delete("/person/" + p1.getId()).then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
                 .body("status", equalTo("Person has been deleted"));
-        
+
     }
 
     /**
-     * Test of EditUser method, of class PersonResource.
+     * Test of EditPerson method, of class PersonResource.
      */
     @Test
-    public void testEditUser() {
-        System.out.println("EditUser");
-       
+    public void testEditPerson() {
+        System.out.println("EditPerson");
+
         String payload = "{\"firstname\": \"jim\","
                 + "\"lastname\": \"theMan\","
-                + "\"email\": \"jim@gmail.com\","
+                + "\"email\": \"jim@test.com\","
                 + "\"street\": \"Fasanvej\","
                 + "\"addInfo\": \"2 th\","
                 + "\"city\": \"testTown\","
@@ -268,11 +263,11 @@ public class PersonResourceTest {
 
         given().contentType("application/json")
                 .body(payload)
-                .post("/person/edit/" + p1.getId()).then()
+                .put("/person/" + p1.getId()).then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
-                .body("firstname", equalTo("jim"), "lastname", equalTo("theMan"), "email", equalTo("jim@gmail.com"), "street", equalTo("Fasanvej"), "addInfo", equalTo("2 th"), "city", equalTo("testTown"),"zip", equalTo(2200));
-        
+                .body("firstname", equalTo("jim"), "lastname", equalTo("theMan"), "email", equalTo("jim@test.com"), "street", equalTo("Fasanvej"), "addInfo", equalTo("2 th"), "city", equalTo("testTown"), "zip", equalTo(2200));
+
     }
 
     /**
@@ -293,87 +288,96 @@ public class PersonResourceTest {
                 .post("/person/").then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
-                .body("firstname", equalTo("Test"), "lastname", equalTo("Testen"), "email", equalTo("bum@hotmail.com"), "street", equalTo("Testvej"), "addInfo", equalTo("1 tv"), "city", equalTo("Testby"),"zip", equalTo(2230));
-    
+                .body("firstname", equalTo("Test"), "lastname", equalTo("Testen"), "email", equalTo("bum@hotmail.com"), "street", equalTo("Testvej"), "addInfo", equalTo("1 tv"), "city", equalTo("Testby"), "zip", equalTo(2230));
+
     }
-    
-      /**
+
+    /**
      * Test of addHobby method, of class PersonResource.
      */
     @Test
-    public void testAddhobby() {
+    public void testAddHobby() {
         String payload = "{\"hobby\": \"testhob\","
-                + "\"description\": \"a hobby test description\"}";
+                + "\"description\": \"A hobby test description\"}";
 
         given().contentType("application/json")
                 .body(payload)
                 .post("person/addhobby/" + p1.getId()).then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
-                .body("hobbies.hobby", hasItems("testhob" ), "hobbies.description", hasItems("a hobby test description"));
-    
+                .body("hobbies.hobby", hasItems("testhob"), "hobbies.description", hasItems("A hobby test description"));
+
     }
-    
-          /**
-     * Test of deleteHobby method, of class PersonResource.
+
+//    /**
+//     * Test of deleteHobby method, of class PersonResource.
+//     */
+//    @Test
+//    public void testDeleteHobby() {
+//
+//        String payload = "{\"hobby_id\": " + hobby1.getId() + "}";
+//
+//        given().contentType("application/json")
+//                .body(payload)
+//                .delete("/person/deletehobby/" + p2.getId()).then()
+//                .assertThat()
+//                .statusCode(HttpStatus.OK_200.getStatusCode())
+//                .body("firstname", equalTo(p2.getFirstName()),
+//                        "lastname", equalTo(p2.getLastName()),
+//                        "hobbies.hobby", hasItems("jumping"));
+//
+//    }
+
+    /**
+     * Test of addPhone method, of class PersonResource.
      */
     @Test
-    public void testDeletehobby() {
+    public void testAddPhone() {
+        String payload = "{\"phone\": \"12345678\","
+                + "\"description\": \"A phone test description\"}";
 
         given().contentType("application/json")
-                .delete("/person/deletehobby/" + p1.getId()).then()
+                .body(payload)
+                .post("person/addphone/" + p1.getId()).then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
-                .body("status", equalTo("Hobby has been deleted"));
-    
-    }
-    
-    
-//
-//    /**
-//     * Test of getPerson method, of class PersonResource.
-//     */
-//    @org.junit.Test
-//    public void testGetPerson_long() {
-//        System.out.println("getPerson");
-//        long id = 0L;
-//        PersonResource instance = new PersonResource();
-//        PersonDTO expResult = null;
-//        PersonDTO result = instance.getPerson(id);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of getPerson method, of class PersonResource.
-//     */
-//    @org.junit.Test
-//    public void testGetPerson_int() {
-//        System.out.println("getPerson");
-//        int number = 0;
-//        PersonResource instance = new PersonResource();
-//        PersonDTO expResult = null;
-//        PersonDTO result = instance.getPerson(number);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of getPersonsByCity method, of class PersonResource.
-//     */
-//    @org.junit.Test
-//    public void testGetPersonsByCity() {
-//        System.out.println("getPersonsByCity");
-//        String city = "";
-//        PersonResource instance = new PersonResource();
-//        List<PersonDTO> expResult = null;
-//        List<PersonDTO> result = instance.getPersonsByCity(city);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
+                .body("phones.phone", hasItems(12345678), "phones.description", hasItems("A phone test description"));
 
+    }
+
+//    /**
+//     * Test of deletePhone method, of class PersonResource.
+//     */
+//    @Test
+//    public void testDeletePhone() {
+//
+//        String payload = "{\"phone_id\": " + phone1.getId() + "}";
+//
+//        given().contentType("application/json")
+//                .body(payload)
+//                .delete("/person/deletephone/" + p1.getId()).then()
+//                .assertThat()
+//                .statusCode(HttpStatus.OK_200.getStatusCode())
+//                .body("firstname", equalTo(p1.getFirstName()),
+//                        "lastname", equalTo(p1.getLastName()),
+//                        "hobbies.hobby", hasItems("programming", "jumping", "handball"));
+//
+//    }
+
+//    /**
+//     * Test of getAllPersons method, of class PersonResource.
+//     */
+//    @Test
+//    public void testGetAllPersons() {
+//        
+//                given().contentType("application/json")
+//                .get("/person/all").then()
+//                .assertThat()
+//                .statusCode(HttpStatus.OK_200.getStatusCode())
+//                .body("firstname", hasItems("jim", "bill"),
+//                      "lastname", hasItems("LastName", "theMan"),
+//                      "email", hasItems("jim@gmail.com", "bill@gmail.com"),
+//                      "address.street", hasItems("gadevejen", "streetname"));
+//        
+//    }
 }

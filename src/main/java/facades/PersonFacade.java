@@ -264,7 +264,7 @@ public class PersonFacade {
 
         EntityManager em = getEntityManager();
 
-        CityInfo cityInfo = getCityInfo(city);
+        CityInfo cityInfo = getCityInfo(city).get(0);
         List<PersonDTO> personsDTO = new ArrayList();
 
         TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.address a WHERE a.cityInfo.id = :city", Person.class);
@@ -318,18 +318,18 @@ public class PersonFacade {
         return count;
     }
 
-    public CityInfo getCityInfo(String city) {
+    public List<CityInfo> getCityInfo(String city) {
 
         EntityManager em = getEntityManager();
 
         if (city.matches("[0-9]+")) {
             int zip = Integer.parseInt(city);
             TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c WHERE c.zip = :zip", CityInfo.class);
-            CityInfo cityInfo = query.setParameter("zip", zip).getSingleResult();
+            List<CityInfo> cityInfo = query.setParameter("zip", zip).getResultList();
             return cityInfo;
         } else {
             TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c WHERE c.city = :city", CityInfo.class);
-            CityInfo cityInfo = query.setParameter("city", city).getSingleResult();
+            List<CityInfo> cityInfo = query.setParameter("city", city).getResultList();
             return cityInfo;
         }
     }

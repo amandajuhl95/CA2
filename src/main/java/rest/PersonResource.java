@@ -112,20 +112,20 @@ public class PersonResource {
             throw new WebApplicationException("Zipcode must be 4 digits", 400);
         }
 
-        CityInfo cityByCity = FACADE.getCityInfo(person.getCity());
-        CityInfo cityByZip = FACADE.getCityInfo(String.valueOf(person.getZip()));
+        List<CityInfo> cityByCity = FACADE.getCityInfo(person.getCity());
+        List<CityInfo> cityByZip = FACADE.getCityInfo(String.valueOf(person.getZip()));
 
-        if (cityByCity != null || cityByZip != null) {
+        if (cityByCity.size() > 0 || cityByZip.size() > 0) {
 
-            if (cityByCity == null && cityByZip != null) {
+            if (cityByCity.isEmpty() && cityByZip.size() > 0) {
                 
                 throw new WebApplicationException("Zipcode matches another city", 400);
 
-            } else if (cityByCity != null && cityByZip == null) {
+            } else if (cityByCity.size() > 0 && cityByZip.isEmpty()) {
                 
                 throw new WebApplicationException("City matches another zipcode", 400);
 
-            } else if (!cityByCity.getId().equals(cityByZip.getId())) {
+            } else if (!cityByCity.get(0).getId().equals(cityByZip.get(0).getId())) {
 
                 throw new WebApplicationException("Zipcode and city matches other cities ", 400);
             }
@@ -134,10 +134,10 @@ public class PersonResource {
         return FACADE.addPerson(person);
     }
     
-    @Path("/{id}")
     @PUT
-    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Edit a person with a given id", tags = {"Person"},
             responses = {
                 @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
@@ -148,7 +148,7 @@ public class PersonResource {
 
         PersonDTO person = GSON.fromJson(personAsJSON, PersonDTO.class);
 
-        if (person.getId() == 0) {
+        if (id == 0) {
 
             throw new WebApplicationException("Id not passed correctly", 400);
         }
@@ -168,7 +168,7 @@ public class PersonResource {
         
         List<PersonDTO> persons = FACADE.getPersonByEmail(person.getEmail());
         
-        if (persons.size() > 0) {
+        if (persons.size() > 0 && id != persons.get(0).getId()) {
 
             throw new WebApplicationException("Email is already in use", 400);
         }
@@ -178,7 +178,7 @@ public class PersonResource {
             throw new WebApplicationException("Street must only contain letters, and be at least 3 characters", 400);
         }
 
-        if (person.getAddInfo() == null || person.getAddInfo().isEmpty() || !person.getAddInfo().contains("[0-9]+")) {
+        if (person.getAddInfo() == null || person.getAddInfo().isEmpty()) {
 
             throw new WebApplicationException("Housenumber must be included", 400);
         }
@@ -191,18 +191,20 @@ public class PersonResource {
             throw new WebApplicationException("Zipcode must be 4 digits", 400);
         }
         
-        CityInfo cityByCity = FACADE.getCityInfo(person.getCity());
-        CityInfo cityByZip = FACADE.getCityInfo(String.valueOf(person.getZip()));
+        List<CityInfo> cityByCity = FACADE.getCityInfo(person.getCity());
+        List<CityInfo> cityByZip = FACADE.getCityInfo(String.valueOf(person.getZip()));
+        
+        if (cityByCity.size() > 0 || cityByZip.size() > 0) {
 
-        if (cityByCity != null || cityByZip != null) {
-
-            if (cityByCity == null && cityByZip != null) {
+            if (cityByCity.isEmpty() && cityByZip.size() > 0) {
+                
                 throw new WebApplicationException("Zipcode matches another city", 400);
 
-            } else if (cityByCity != null && cityByZip == null) {
+            } else if (cityByCity.size() > 0 && cityByZip.isEmpty()) {
+                
                 throw new WebApplicationException("City matches another zipcode", 400);
 
-            } else if (!cityByCity.getId().equals(cityByZip.getId())) {
+            } else if (!cityByCity.get(0).getId().equals(cityByZip.get(0).getId())) {
 
                 throw new WebApplicationException("Zipcode and city matches other cities ", 400);
             }
@@ -213,6 +215,7 @@ public class PersonResource {
     }
     
     @DELETE
+    @Path("/{id}")
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Delete a person with a given id", tags = {"Person"},
             responses = {
