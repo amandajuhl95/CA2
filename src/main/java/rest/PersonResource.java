@@ -329,13 +329,13 @@ public class PersonResource {
                 @ApiResponse(responseCode = "200", description = "The count of people with that hobby"),
                 @ApiResponse(responseCode = "400", description = "The hobby doesn't excist, and the list of persons is not found")})
 
-    public int getPersonCountByHobby(@PathParam("hobby") String hobby) {
+    public String getPersonCountByHobby(@PathParam("hobby") String hobby) {
 
         if (hobby == null || "".equals(hobby)) {
             throw new WebApplicationException("Hobby must be defined", 400);
         }
 
-        return FACADE.getPersonCountByHobby(hobby);
+        return "{\"count\":"+ FACADE.getPersonCountByHobby(hobby ) + "}";
     }
 
     @GET
@@ -388,6 +388,7 @@ public class PersonResource {
     
     @Path("/deletehobby/{id}")
     @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Delete a hobby from a person", tags = {"Person"},
             responses = {
