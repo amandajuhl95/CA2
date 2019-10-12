@@ -1,6 +1,5 @@
 package rest;
 
-import dto.PersonDTO;
 import entities.Address;
 import entities.CityInfo;
 import entities.Hobby;
@@ -22,10 +21,10 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
+import org.junit.After;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import utils.EMF_Creator.DbSelector;
 import utils.EMF_Creator.Strategy;
@@ -43,6 +42,14 @@ public class PersonResourceTest {
 
     private Person p1;
     private Person p2;
+    private CityInfo cityInfo;
+    private Hobby hobby1;
+    private Hobby hobby2;
+    private Hobby hobby3;
+    private Phone phone1;
+    private Phone phone2;
+    private Address address1;
+    private Address address2;
 
     static HttpServer startServer() {
         ResourceConfig rc = ResourceConfig.forApplication(new ApplicationConfig());
@@ -64,7 +71,6 @@ public class PersonResourceTest {
 
     @AfterAll
     public static void closeTestServer() {
-        //System.in.read();
         // Don't forget this, if you called its counterpart in @BeforeAll
         EMF_Creator.endREST_TestWithDB();
         httpServer.shutdownNow();
@@ -76,33 +82,29 @@ public class PersonResourceTest {
     public void setUp() {
 
         EntityManager em = emf.createEntityManager();
-        CityInfo cityInfo = new CityInfo(2200, "testTown");
-        Address address = new Address("streetname", "4 tv", cityInfo);
-        Phone phone = new Phone(22112211, "workPhone");
-        Hobby hobby = new Hobby("programming", "the future of mankind is programming, also good for making a blog about your dog pictures");
-        p1 = new Person("jim@gmail.com", "jim", "theMan", address);
+        
+        cityInfo = new CityInfo(2200, "testTown");
 
-        Address address2 = new Address("gadevejen", "1 th", cityInfo);
-        Phone phone2 = new Phone(99889988, "privatePhone");
-        Hobby hobby2 = new Hobby("jumping", "super fun and easy");
+        address1 = new Address("streetname", "4 tv", cityInfo);
+        address2 = new Address("gadevejen", "1 th", cityInfo);
+        p1 = new Person("jim@gmail.com", "jim", "theMan", address1);
         p2 = new Person("bill@gmail.com", "bill", "LastName", address2);
+        phone1 = new Phone(22112211, "workPhone");
+        phone2 = new Phone(99889988, "privatePhone");
+        hobby1 = new Hobby("programming", "the future of mankind is programming, also good for making a blog about your dog pictures");
+        hobby2 = new Hobby("jumping", "super fun and easy");
+        hobby3 = new Hobby("handball", "Team sport");
 
-        cityInfo.addAddress(address);
-        p1.addHobby(hobby);
+        cityInfo.addAddress(address1);
+        p1.addHobby(hobby1);
         p1.addHobby(hobby2);
-        p1.addPhone(phone);
-        address.addPerson(p1);
-        hobby.addPerson(p1);
-        phone.setPerson(p1);
+        p1.addHobby(hobby3);
+        p1.addPhone(phone1);
 
         cityInfo.addAddress(address2);
         p2.addHobby(hobby2);
-        p2.addHobby(hobby);
+        p2.addHobby(hobby1);
         p2.addPhone(phone2);
-        address2.addPerson(p2);
-        hobby.addPerson(p2);
-        hobby2.addPerson(p2);
-        phone2.setPerson(p2);
 
         try {
             em.getTransaction().begin();
@@ -296,19 +298,82 @@ public class PersonResourceTest {
     }
     
       /**
-     * Test of addPerson method, of class PersonResource.
+     * Test of addHobby method, of class PersonResource.
      */
     @Test
-    public void testaddhobby() {
+    public void testAddhobby() {
         String payload = "{\"hobby\": \"testhob\","
-                + "\"description\": \"a hobby test description\"";
+                + "\"description\": \"a hobby test description\"}";
 
         given().contentType("application/json")
                 .body(payload)
-                .post("/addhobby/" + p1.getId()).then()
+                .post("person/addhobby/" + p1.getId()).then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
                 .body("hobbies.hobby", hasItems("testhob" ), "hobbies.description", hasItems("a hobby test description"));
     
     }
+    
+          /**
+     * Test of deleteHobby method, of class PersonResource.
+     */
+    @Test
+    public void testDeletehobby() {
+
+        given().contentType("application/json")
+                .delete("/person/deletehobby/" + p1.getId()).then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("status", equalTo("Hobby has been deleted"));
+    
+    }
+    
+    
+//
+//    /**
+//     * Test of getPerson method, of class PersonResource.
+//     */
+//    @org.junit.Test
+//    public void testGetPerson_long() {
+//        System.out.println("getPerson");
+//        long id = 0L;
+//        PersonResource instance = new PersonResource();
+//        PersonDTO expResult = null;
+//        PersonDTO result = instance.getPerson(id);
+//        assertEquals(expResult, result);
+//        // TODO review the generated test code and remove the default call to fail.
+//        fail("The test case is a prototype.");
+//    }
+//
+//    /**
+//     * Test of getPerson method, of class PersonResource.
+//     */
+//    @org.junit.Test
+//    public void testGetPerson_int() {
+//        System.out.println("getPerson");
+//        int number = 0;
+//        PersonResource instance = new PersonResource();
+//        PersonDTO expResult = null;
+//        PersonDTO result = instance.getPerson(number);
+//        assertEquals(expResult, result);
+//        // TODO review the generated test code and remove the default call to fail.
+//        fail("The test case is a prototype.");
+//    }
+//
+//    /**
+//     * Test of getPersonsByCity method, of class PersonResource.
+//     */
+//    @org.junit.Test
+//    public void testGetPersonsByCity() {
+//        System.out.println("getPersonsByCity");
+//        String city = "";
+//        PersonResource instance = new PersonResource();
+//        List<PersonDTO> expResult = null;
+//        List<PersonDTO> result = instance.getPersonsByCity(city);
+//        assertEquals(expResult, result);
+//        // TODO review the generated test code and remove the default call to fail.
+//        fail("The test case is a prototype.");
+//    }
+//
+
 }

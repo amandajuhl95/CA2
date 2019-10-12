@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dto.HobbyDTO;
 import dto.PersonDTO;
+import dto.PhoneDTO;
 import entities.CityInfo;
-import entities.Person;
 import utils.EMF_Creator;
 import facades.PersonFacade;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -17,9 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -31,7 +29,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import org.eclipse.persistence.jpa.jpql.parser.ElseExpressionBNF;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -62,9 +59,16 @@ public class PersonResource {
         return "{\"msg\":\"Hello World\"}";
     }
     
+    
     @GET
     @Path("/id/{id}")
     @Produces({MediaType.APPLICATION_JSON})
+    @Operation(summary = "Retrieve person information by id", tags = {"Person"},
+            responses = {
+                @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "The Requested Person"),
+                @ApiResponse(responseCode = "400", description = "Person not found")})
+    
     public PersonDTO getPerson(@PathParam("id") long id) {
 
         return FACADE.getPersonById(id);
@@ -73,14 +77,14 @@ public class PersonResource {
     @GET
     @Path("/{number}")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Get Person info by phonenumber",
-            tags = {"Person"},
+    @Operation(summary = "Retrieve person information by phonenumber", tags = {"Person"},
             responses = {
                 @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
                 @ApiResponse(responseCode = "200", description = "The Requested Person"),
                 @ApiResponse(responseCode = "400", description = "Person not found")})
 
     public PersonDTO getPerson(@PathParam("number") int number) {
+        
         PersonDTO p = FACADE.getPerson(number);
 
         if (p == null) {
@@ -93,13 +97,12 @@ public class PersonResource {
     @GET
     @Path("/hobby/{hobby}")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Get all persons info by hobby",
-            tags = {"Person"},
+    @Operation(summary = "Retrieve all persons by a specific hobby", tags = {"Person"},
             responses = {
                 @ApiResponse(
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-                @ApiResponse(responseCode = "200", description = "The Requested List of persons"),
-                @ApiResponse(responseCode = "400", description = "List of Persons not found")})
+                @ApiResponse(responseCode = "200", description = "The Requested list of persons"),
+                @ApiResponse(responseCode = "400", description = "The list of persons is not found")})
 
     public List<PersonDTO> getPersonsByHobby(@PathParam("hobby") String hobby) {
 
@@ -112,17 +115,15 @@ public class PersonResource {
         return persons;
     }
 
-    //get all persons from a specific city
     @GET
     @Path("/city/{city}")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Get all persons info by city",
-            tags = {"Person"},
+    @Operation(summary = "Retrieve all persons by a specific city", tags = {"Person"},
             responses = {
                 @ApiResponse(
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-                @ApiResponse(responseCode = "200", description = "The Requested List of persons"),
-                @ApiResponse(responseCode = "400", description = "List of Persons not found")})
+                @ApiResponse(responseCode = "200", description = "The Requested list of persons"),
+                @ApiResponse(responseCode = "400", description = "The list of persons is not found")})
 
     public List<PersonDTO> getPersonsByCity(@PathParam("city") String city) {
 
@@ -135,17 +136,15 @@ public class PersonResource {
         return persons;
     }
 
-    //count of persons with given hobby
     @GET
     @Path("/count/{hobby}")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "number of persons with a given hobby",
-            tags = {"Person"},
+    @Operation(summary = "Retrieve the count of persons with a given hobby", tags = {"Person"},
             responses = {
                 @ApiResponse(
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-                @ApiResponse(responseCode = "200", description = "the number of people with that hobby"),
-                @ApiResponse(responseCode = "400", description = "List of Persons not found")})
+                @ApiResponse(responseCode = "200", description = "The count of people with that hobby"),
+                @ApiResponse(responseCode = "400", description = "The hobby doesn't excist, and the list of persons is not found")})
 
     public int getPersonCountByHobby(@PathParam("hobby") String hobby) {
 
@@ -159,13 +158,12 @@ public class PersonResource {
     @GET
     @Path("/zipcodes")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "a list of all zipcodes in Denmark",
-            tags = {"Person"},
+    @Operation(summary = "Retrieve a list of all zipcodes in Denmark", tags = {"Person"},
             responses = {
                 @ApiResponse(
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-                @ApiResponse(responseCode = "200", description = "all zipcodes in denmark"),
-                @ApiResponse(responseCode = "400", description = "List of zipcodes not found")})
+                @ApiResponse(responseCode = "200", description = "The list of all zipcodes in denmark"),
+                @ApiResponse(responseCode = "400", description = "The list of zipcodes not is found")})
 
     public List<Integer> AllZipCodesInDenmark() {
 
@@ -175,13 +173,12 @@ public class PersonResource {
     @DELETE
     @Path("/delete/{id}")
     @Produces({MediaType.APPLICATION_JSON})
-    @Operation(summary = "Delete a person with a given id",
-            tags = {"Person"},
+    @Operation(summary = "Delete a person with a given id", tags = {"Person"},
             responses = {
                 @ApiResponse(
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-                @ApiResponse(responseCode = "200", description = "person was deleted"),
-                @ApiResponse(responseCode = "400", description = "wrong id passed")})
+                @ApiResponse(responseCode = "200", description = "The person is deleted"),
+                @ApiResponse(responseCode = "400", description = "The person was not found and therefor not deleted")})
 
     public String DeleteUser(@PathParam("id") long id) {
 
@@ -199,58 +196,74 @@ public class PersonResource {
     @Path("/edit/{id}")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Edit a person with a given id",
-            tags = {"Person"},
+    @Operation(summary = "Edit a person with a given id", tags = {"Person"},
             responses = {
                 @ApiResponse(
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-                @ApiResponse(responseCode = "200", description = "person was edited"),
-                @ApiResponse(responseCode = "400", description = "person was NOT editet")})
+                @ApiResponse(responseCode = "200", description = "The person is edited"),
+                @ApiResponse(responseCode = "400", description = "The person is NOT edited")})
 
     public PersonDTO EditUser(@PathParam("id") long id, String personAsJSON) {
-        
+
         PersonDTO person = GSON.fromJson(personAsJSON, PersonDTO.class);
+
+        if (person.getId() == 0) {
+
+            throw new WebApplicationException("Id not passed correctly", 400);
+        }
+        if (person.getFirstname() == null || person.getFirstname().isEmpty() || person.getFirstname().contains("[0-9]+") || person.getFirstname().length() < 2) {
+
+            throw new WebApplicationException("Firstname must be 2 characters", 400);
+        }
+
+        if (person.getLastname() == null || person.getLastname().isEmpty() || person.getLastname().contains("[0-9]+") || person.getLastname().length() < 2) {
+
+            throw new WebApplicationException("Lastname must be 2 characters", 400);
+        }
+        if (person.getEmail() == null || person.getEmail().isEmpty() || !person.getEmail().contains("@") && !person.getEmail().contains(".")) {
+
+            throw new WebApplicationException("Please enter valid email", 400);
+        }
+
+        if (person.getStreet() == null || person.getStreet().isEmpty() || person.getStreet().contains("[0-9]+") || person.getStreet().length() < 3) {
+
+            throw new WebApplicationException("Street must only contain letters, and be at least 3 characters", 400);
+        }
+
+        if (person.getAddInfo() == null || person.getAddInfo().isEmpty() || !person.getAddInfo().contains("[0-9]+")) {
+
+            throw new WebApplicationException("Housenumber must be included", 400);
+        }
+        if (person.getCity() == null || person.getCity().isEmpty() || person.getCity().contains("[0-9]+") || person.getCity().length() < 3) {
+
+            throw new WebApplicationException("City must be at least 3 characters", 400);
+        }
+        if (person.getZip() < 1000 || person.getZip() > 9999) {
+
+            throw new WebApplicationException("Zipcode must be 4 digits", 400);
+        }
         
-        if (person.getId() == 0){
-              
-            throw new WebApplicationException("Id not passed correctly",400);
+        CityInfo cityByCity = FACADE.getCityInfo(person.getCity());
+        CityInfo cityByZip = FACADE.getCityInfo(String.valueOf(person.getZip()));
+
+        if (cityByCity != null || cityByZip != null) {
+
+            if (cityByCity == null && cityByZip != null) {
+                throw new WebApplicationException("Zipcode matches another city", 400);
+
+            } else if (cityByCity != null && cityByZip == null) {
+                throw new WebApplicationException("City matches another zipcode", 400);
+
+            } else if (!cityByCity.getId().equals(cityByZip.getId())) {
+
+                throw new WebApplicationException("Zipcode and city matches other cities ", 400);
+            }
         }
-        if(person.getFirstname() == null || person.getFirstname().isEmpty() || person.getFirstname().contains("[0-9]+") || person.getFirstname().length() < 2){
-            
-            throw new WebApplicationException("Firstname must be 2 characters",400);
-        }
-        
-        if(person.getLastname() == null || person.getLastname().isEmpty() || person.getLastname().contains("[0-9]+") || person.getLastname().length() < 2){
-            
-            throw new WebApplicationException("Lastname must be 2 characters",400);
-        }
-        if(person.getEmail() == null || person.getEmail().isEmpty() || !person.getEmail().contains("@") && !person.getEmail().contains(".")){
-            
-            throw new WebApplicationException("Please enter valid email",400);
-        }
-        
-        if(person.getStreet() == null || person.getStreet().isEmpty() || person.getStreet().contains("[0-9]+") || person.getStreet().length() < 3){
-            
-            throw new WebApplicationException("Street must only contain letters, and be at least 3 characters",400);
-        }
-        
-        if(person.getAddInfo() == null || person.getAddInfo().isEmpty() || !person.getAddInfo().contains("[0-9]+")){
-            
-            throw new WebApplicationException("Housenumber must be included",400);
-        }
-        if(person.getCity() == null || person.getCity().isEmpty() || person.getCity().contains("[0-9]+") || person.getCity().length() < 3){
-            
-            throw new WebApplicationException("City must be at least 3 characters",400);
-        }
-        if(person.getZip() < 1000 || person.getZip() > 9999){
-            
-            throw new WebApplicationException("Zipcode must be 4 digits",400);
-        }
-       
+
         person.setId(id);
         return FACADE.editPerson(person);
     }
-    
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -264,6 +277,14 @@ public class PersonResource {
     public PersonDTO addPerson(String personAsJSON) {
 
         PersonDTO person = GSON.fromJson(personAsJSON, PersonDTO.class);
+
+        List<PersonDTO> persons = FACADE.getAllPersons();
+        for (PersonDTO pDTO : persons) {
+            
+            if (pDTO.getEmail().equals(person.getEmail())) {
+                throw new WebApplicationException("Email is already in use", 400);
+            }
+        }
 
         if (person.getFirstname() == null || person.getFirstname().isEmpty() || person.getFirstname().contains("[0-9]+") || person.getFirstname().length() < 2) {
 
@@ -296,60 +317,113 @@ public class PersonResource {
 
             throw new WebApplicationException("Zipcode must be 4 digits", 400);
         }
-         
+
         CityInfo cityByCity = FACADE.getCityInfo(person.getCity());
-         CityInfo cityByZip = FACADE.getCityInfo(String.valueOf(person.getZip()));
-         
-          if (cityByCity != null || cityByZip != null) {
-              
-              if(cityByCity == null && cityByZip != null)
-              {
-                  throw new WebApplicationException("Zipcode matches another city", 400);
-              }
-              else if(cityByCity != null && cityByZip == null)
-              {
-                  throw new WebApplicationException("City matches another zipcode", 400);
-              }
-              else if(!cityByCity.getId().equals(cityByZip.getId())){
-              
-                  throw new WebApplicationException("Zipcode and city matches other cities ", 400);
-          }
+        CityInfo cityByZip = FACADE.getCityInfo(String.valueOf(person.getZip()));
+
+        if (cityByCity != null || cityByZip != null) {
+
+            if (cityByCity == null && cityByZip != null) {
+                
+                throw new WebApplicationException("Zipcode matches another city", 400);
+
+            } else if (cityByCity != null && cityByZip == null) {
+                
+                throw new WebApplicationException("City matches another zipcode", 400);
+
+            } else if (!cityByCity.getId().equals(cityByZip.getId())) {
+
+                throw new WebApplicationException("Zipcode and city matches other cities ", 400);
+            }
         }
 
         return FACADE.addPerson(person);
 
     }
 
-    
     @Path("/addhobby/{id}")
-      @POST
+    @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "adds a new hobby to the database and the person", tags = {"Person"},
+    @Operation(summary = "Add a new hobby to the database and connect to the person", tags = {"Person"},
             responses = {
                 @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
-                @ApiResponse(responseCode = "200", description = "a new hobby has been added to the person"),
+                @ApiResponse(responseCode = "200", description = "A new hobby has been added to the person"),
                 @ApiResponse(responseCode = "400", description = "Not all arguments provided with the body")
             })
 
-    public PersonDTO addhobby(@PathParam("id") long id, String HobbyAsJSON) {
+    public PersonDTO addHobby(@PathParam("id") long id, String HobbyAsJSON) {
 
         HobbyDTO hobby = GSON.fromJson(HobbyAsJSON, HobbyDTO.class);
 
-        if (hobby.getHobby() == null ||  hobby.getHobby().length() < 2 ) {
+        if (hobby.getHobby() == null || hobby.getHobby().length() < 2) {
 
-            throw new WebApplicationException("hobby must be 2 characters", 400);
+            throw new WebApplicationException("Hobby must be 2 at least characters", 400);
         }
 
-        if ( hobby.getDescription() == null ||  hobby.getDescription().length() < 2) {
+        if (hobby.getDescription() == null || hobby.getDescription().length() < 2) {
 
-            throw new WebApplicationException("description must be 2 characters", 400);
+            throw new WebApplicationException("Description must be at least 2 characters", 400);
         }
 
         return FACADE.addHobby(id, hobby);
 
     }
     
+    @Path("/deletehobby/{id}")
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Delete a hobby from a person", tags = {"Person"},
+            responses = {
+                @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "The hobby has been deleted from the person"),
+                @ApiResponse(responseCode = "400", description = "The hobby was not found and therefor not deleted")
+            })
+
+    public String deleteHobby(@PathParam("id") long hobby_id, long person_id) {
+        
+        if(person_id == 0 || hobby_id == 0)
+        {
+            throw new WebApplicationException("Id not passed correctly", 400);
+        }
+        
+        FACADE.deleteHobby(person_id, hobby_id);
+        
+        return "{\"status\": \"Hobby has been deleted\"}";
+
+    }
+    
+    @Path("/addphone/{id}")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Add a new phone to the database connected to the person", tags = {"Person"},
+            responses = {
+                @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(responseCode = "200", description = "A new phone has been added to the person"),
+                @ApiResponse(responseCode = "400", description = "Not all arguments provided with the body")
+            })
+
+    public PersonDTO addPhone(@PathParam("id") long id, String PhoneAsJSON) {
+
+        PhoneDTO phone = GSON.fromJson(PhoneAsJSON, PhoneDTO.class);
+
+        if (String.valueOf(phone.getPhone()).length() != 8) {
+
+            throw new WebApplicationException("Not a valid phone number, it must contain 8 digits", 400);
+        }
+
+        if (phone.getDescription() == null || phone.getDescription().length() < 2) {
+
+            throw new WebApplicationException("Description must be at least 2 characters", 400);
+        }
+
+        return FACADE.addPhone(id, phone);
+
+    }
+    
+    
+
 }
 
 
