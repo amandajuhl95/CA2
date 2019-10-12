@@ -72,7 +72,7 @@ public class PersonFacadeTest {
         phone2 = new Phone(99889988, "privatePhone");
         hobby1 = new Hobby("programming", "the future of mankind is programming, also good for making a blog about your dog pictures");
         hobby2 = new Hobby("jumping", "super fun and easy");
-        hobby3 = new Hobby("Handball", "Team sport");
+        hobby3 = new Hobby("handball", "Team sport");
 
         cityInfo.addAddress(address1);
         p1.addHobby(hobby1);
@@ -222,6 +222,14 @@ public class PersonFacadeTest {
     }
 
     /**
+     * Test of getAllPersons method, of class PersonFacade.
+     */
+    @Test
+    public void testGetAllPersons() {
+        
+    }
+
+    /**
      * Test of getPersonsByHobby method, of class PersonFacade.
      */
     @Test
@@ -283,15 +291,21 @@ public class PersonFacadeTest {
     public void testAddHobby() {
 
         System.out.println("addHobby");
-        
-        
-        HobbyDTO hobby = new HobbyDTO("Handball", "A team sport. The team with the highest score wins");
+
+        HobbyDTO hobby = new HobbyDTO("Football", "A team sport. The team with the highest score wins");
 
         int hobbiesbefore = p1.getHobbies().size();
-        PersonDTO p = facade.addHobby(p1.getId(),hobby);
+        PersonDTO p = facade.addHobby(p1.getId(), hobby);
         int hobbiesafter = p.getHobbies().size();
 
         assertTrue(hobbiesbefore < hobbiesafter);
+
+        hobbiesbefore = hobbiesafter;
+        hobby = new HobbyDTO(hobby1);
+        p = facade.addHobby(p1.getId(), hobby);
+        hobbiesafter = p.getHobbies().size();
+
+        assertTrue(hobbiesbefore == hobbiesafter);
     }
 
     /**
@@ -339,6 +353,14 @@ public class PersonFacadeTest {
         PersonDTO p = facade.deletePhone(p2.getId(), phone2.getId());
         int phonesafter = p.getPhones().size();
         assertTrue(phonesbefore > phonesafter);
+    }
+
+    /**
+     * Test of getCityInfo method, of class PersonFacade.
+     */
+    @Test
+    public void testGetCityInfo() {
+
     }
 
 }
