@@ -134,13 +134,13 @@ public class PersonResource {
         return FACADE.addPerson(person);
     }
     
+    @Path("/{id}")
     @PUT
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Edit a person with a given id", tags = {"Person"},
             responses = {
-                @ApiResponse(
-                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
+                @ApiResponse(content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonDTO.class))),
                 @ApiResponse(responseCode = "200", description = "The person is edited"),
                 @ApiResponse(responseCode = "400", description = "Not all arguments provided correctly with the body")})
 
@@ -277,7 +277,7 @@ public class PersonResource {
         return persons;
     }
     
-     @GET
+    @GET
     @Path("/city/{city}")
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(summary = "Retrieve all persons by a specific city", tags = {"Person"},
