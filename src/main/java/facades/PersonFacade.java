@@ -473,5 +473,23 @@ public class PersonFacade {
         }
         return personsDTO;
     }
+    
+    public List<PersonDTO> getPersonByEmail(String email)
+    {
+        EntityManager em = getEntityManager();
+
+        List<PersonDTO> personsDTO = new ArrayList();
+
+        TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p WHERE p.email = :email", Person.class);
+        List<Person> persons = query.setParameter("email", email).getResultList();
+
+        for (Person person : persons) {
+            personsDTO.add(new PersonDTO(person));
+
+        }
+        return personsDTO;
+        
+        
+    }
 
 }

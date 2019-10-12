@@ -405,16 +405,13 @@ public class PersonFacadeTest {
      */
     @Test
     public void testGetCityInfo() {
+        
+        CityInfo city = facade.getCityInfo(cityInfo.getCity());
+        assertEquals(city.getZip(), cityInfo.getZip());
+        
+        city = facade.getCityInfo(String.valueOf(cityInfo.getZip()));
+        assertEquals(city.getCity(), cityInfo.getCity());
 
-    }
-
-
-    /**
-     * Test of getHobby method, of class PersonFacade.
-     */
-    @Test
-    public void testGetHobby() {
-      
     }
 
 }
