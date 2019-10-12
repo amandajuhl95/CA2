@@ -12,11 +12,13 @@ import java.util.List;
 import utils.EMF_Creator;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.ws.rs.WebApplicationException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -204,7 +206,7 @@ public class PersonFacadeTest {
         assertFalse(personDTO == null);
         assertEquals("jim@gmail.com", personDTO.getEmail());
         assertEquals("jim", personDTO.getFirstname());
-        assertEquals(2, personDTO.getHobbies().size());
+        assertEquals(3, personDTO.getHobbies().size());
     }
 
     /**
@@ -226,7 +228,7 @@ public class PersonFacadeTest {
      */
     @Test
     public void testGetAllPersons() {
-        
+
     }
 
     /**
@@ -300,6 +302,7 @@ public class PersonFacadeTest {
 
         assertTrue(hobbiesbefore < hobbiesafter);
 
+        //Adding an hobby that is already in the database
         hobbiesbefore = hobbiesafter;
         hobby = new HobbyDTO(hobby1);
         p = facade.addHobby(p1.getId(), hobby);
@@ -316,13 +319,33 @@ public class PersonFacadeTest {
 
         System.out.println("deleteHobby");
 
-        int hobbiesbefore = p1.getHobbies().size();
-        facade.deleteHobby(p1.getId(), hobby1.getId());
-        facade.deleteHobby(p1.getId(), hobby3.getId());
-        int hobbiesafter = p1.getHobbies().size();
+        PersonDTO person;
 
+        int hobbiesbefore = p1.getHobbies().size();
+        person = facade.deleteHobby(p1.getId(), hobby3.getId());
+        int hobbiesafter = person.getHobbies().size();
         assertTrue(hobbiesbefore > hobbiesafter);
-        assertEquals(1, p1.getHobbies().size());
+        assertEquals(2, person.getHobbies().size());
+
+        //testing when deleteing a hobby with more the one person 
+        hobbiesbefore = hobbiesafter;
+        person = facade.deleteHobby(p1.getId(), hobby1.getId());
+
+        List<Hobby> hobby = facade.getHobby(hobby1.getName());
+        assertEquals(1, hobby.size());
+        hobbiesafter = person.getHobbies().size();
+        assertTrue(hobbiesbefore > hobbiesafter);
+        assertEquals(1, person.getHobbies().size());
+        
+        //Testing that tying to delete a hobby not connected to the person will throw an exception
+        try {
+            facade.deleteHobby(p1.getId(), 333L);
+            fail();
+        } catch (WebApplicationException ex) {
+
+            assertEquals(ex.getMessage(), "The hobby is not found in " + p1.getFirstName() + " " + p1.getLastName() + "'s hobbylist");
+
+        }
     }
 
     /**
@@ -339,6 +362,17 @@ public class PersonFacadeTest {
         int phonesafter = p.getPhones().size();
 
         assertTrue(phonesbefore < phonesafter);
+
+        //Testing that tying to add a phonenumber already connected to an other person will throw an exception
+        try {
+            phone = new PhoneDTO(phone2);
+            facade.addPhone(p1.getId(), phone);
+            fail();
+        } catch (WebApplicationException ex) {
+
+            assertEquals(ex.getMessage(), "Phonenumber is already in use");
+
+        }
     }
 
     /**
@@ -350,9 +384,20 @@ public class PersonFacadeTest {
         System.out.println("deletePhone");
 
         int phonesbefore = p2.getPhones().size();
-        PersonDTO p = facade.deletePhone(p2.getId(), phone2.getId());
+        PersonDTO p = facade.deletePhone(p1.getId(), phone1.getId());
         int phonesafter = p.getPhones().size();
         assertTrue(phonesbefore > phonesafter);
+ 
+        
+        //Testing that tying to delete a phonenumber not connected to the person will throw an exception
+        try {
+            facade.deletePhone(p1.getId(), phone2.getId());
+            fail();
+        } catch (WebApplicationException ex) {
+
+            assertEquals(ex.getMessage(), "The phone is not found in " + p1.getFirstName() + " " + p1.getLastName() + "'s phonelist");
+
+        }
     }
 
     /**
@@ -361,6 +406,15 @@ public class PersonFacadeTest {
     @Test
     public void testGetCityInfo() {
 
+    }
+
+
+    /**
+     * Test of getHobby method, of class PersonFacade.
+     */
+    @Test
+    public void testGetHobby() {
+      
     }
 
 }

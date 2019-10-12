@@ -134,6 +134,12 @@ public class PersonFacade {
 
         EntityManager em = getEntityManager();
 
+        Person person = em.find(Person.class, p.getId());
+        if (person == null) {
+
+            throw new WebApplicationException("No person with the given id was found");
+        }
+
         //Checking if cityinfo already exsists in Database
         CityInfo cityInfo;
         List<CityInfo> cityDB = getCityInfo(p.getCity(), p.getZip());
@@ -153,7 +159,6 @@ public class PersonFacade {
         }
 
         //Setting edits on the person with the given id
-        Person person = em.find(Person.class, p.getId());
         person.setFirstName(p.getFirstname());
         person.setLastName(p.getLastname());
         person.setEmail(p.getEmail());
@@ -197,9 +202,12 @@ public class PersonFacade {
     public PersonDTO addHobby(long person_id, HobbyDTO h) {
 
         EntityManager em = getEntityManager();
-        
+
         Person person = em.find(Person.class, person_id);
-        
+        if (person == null) {
+            throw new WebApplicationException("No person with the given id was found");
+        }
+
         Hobby hobby;
         List<Hobby> hobbies = getHobby(h.getHobby());
         if (hobbies.size() > 0) {
@@ -213,7 +221,6 @@ public class PersonFacade {
         try {
             em.getTransaction().begin();
             em.merge(person);
-            em.persist(person);
             em.getTransaction().commit();
             return new PersonDTO(person);
         } finally {
@@ -221,7 +228,7 @@ public class PersonFacade {
         }
     }
 
-    private List<Hobby> getHobby(String hobby) {
+    public List<Hobby> getHobby(String hobby) {
         EntityManager em = getEntityManager();
 
         TypedQuery<Hobby> query = em.createQuery("SELECT h FROM Hobby h WHERE h.name = :name", Hobby.class);
@@ -234,7 +241,20 @@ public class PersonFacade {
         EntityManager em = getEntityManager();
 
         Person person = em.find(Person.class, person_id);
-        Hobby hobby = em.find(Hobby.class, hobby_id);
+        if (person == null) {
+            throw new WebApplicationException("No person with the given id was found");
+        }
+
+        Hobby hobby = null;
+        for (Hobby h : person.getHobbies()) {
+            if (h.getId().equals(hobby_id)) {
+                hobby = h;
+            }
+        }
+        if (hobby == null) {
+            throw new WebApplicationException("The hobby is not found in " + person.getFirstName() + " " + person.getLastName() + "'s hobbylist", 400);
+        }
+
         person.removeHobby(hobby);
 
         int numOfPeople = getPersonCountByHobby(hobby.getName());
@@ -242,7 +262,7 @@ public class PersonFacade {
         try {
             em.getTransaction().begin();
             em.merge(person);
-            
+
             if (numOfPeople == 1) {
                 em.remove(hobby);
             }
@@ -260,13 +280,16 @@ public class PersonFacade {
         EntityManager em = getEntityManager();
 
         Person person = em.find(Person.class, person_id);
-        
+        if (person == null) {
+            throw new WebApplicationException("No person with the given id was found");
+        }
+
         Phone phone;
         List<Phone> phones = getPhones(ph.getPhone());
         if (phones.size() > 0) {
-            
-          throw new WebApplicationException("Phonenumber is already in use", 400);
-                  
+
+            throw new WebApplicationException("Phonenumber is already in use", 400);
+
         } else {
             phone = new Phone(ph.getPhone(), ph.getDescription());
         }
@@ -276,13 +299,13 @@ public class PersonFacade {
             em.getTransaction().begin();
             em.merge(person);
             em.getTransaction().commit();
-            
+
             return new PersonDTO(person);
         } finally {
             em.close();
         }
     }
-    
+
     private List<Phone> getPhones(int phone) {
         EntityManager em = getEntityManager();
 
@@ -291,19 +314,30 @@ public class PersonFacade {
 
     }
 
-    public PersonDTO deletePhone(long person_id, Long phone_id) {
+    public PersonDTO deletePhone(long person_id, long phone_id) {
 
         EntityManager em = getEntityManager();
 
         Person person = em.find(Person.class, person_id);
-        Phone phone = em.find(Phone.class, phone_id);
+        if (person == null) {
+            throw new WebApplicationException("No person with the given id was found");
+        }
+
+        Phone phone = null;
+        for (Phone p : person.getPhones()) {
+            if (p.getId().equals(phone_id)) {
+                phone = p;
+            }
+        }
+        if (phone == null) {
+            throw new WebApplicationException("The phone is not found in " + person.getFirstName() + " " + person.getLastName() + "'s phonelist", 400);
+        }
         person.removePhone(phone);
 
         try {
             em.getTransaction().begin();
             em.remove(phone);
             em.merge(person);
-            em.persist(person);
             em.getTransaction().commit();
 
         } finally {
@@ -331,6 +365,10 @@ public class PersonFacade {
 
         TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p INNER JOIN p.phones ph WHERE ph.number = :number", Person.class);
         Person person = query.setParameter("number", number).getSingleResult();
+        if (person == null) {
+            throw new WebApplicationException("No person with the given id was found");
+        }
+        
         PersonDTO personDTO = new PersonDTO(person);
 
         return personDTO;
