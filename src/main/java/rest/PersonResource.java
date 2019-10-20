@@ -67,16 +67,27 @@ public class PersonResource {
 
         PersonDTO person = GSON.fromJson(personAsJSON, PersonDTO.class);
 
-        if (person.getFirstname() == null || person.getFirstname().isEmpty() || person.getFirstname().contains("[0-9]+") || person.getFirstname().length() < 2) {
+        if (person.getFirstname() == null || person.getFirstname().isEmpty() || person.getFirstname().length() < 2) {
 
             throw new WebApplicationException("Firstname must be 2 characters", 400);
         }
+        
+        if (person.getFirstname().matches(".*\\d+.*")) {
 
-        if (person.getLastname() == null || person.getLastname().isEmpty() || person.getLastname().contains("[0-9]+") || person.getLastname().length() < 2) {
+            throw new WebApplicationException("Firstname must not contain digits", 400);
+        }
+
+        if (person.getLastname() == null || person.getLastname().isEmpty() || person.getLastname().length() < 2) {
 
             throw new WebApplicationException("Lastname must be 2 characters", 400);
         }
-        if (person.getEmail() == null || person.getEmail().isEmpty() || !person.getEmail().contains("@") && !person.getEmail().contains(".")) {
+        
+        if (person.getLastname().matches(".*\\d+.*")) {
+
+            throw new WebApplicationException("Lastname must not contain digits", 400);
+        }
+        
+        if (person.getEmail() == null || person.getEmail().isEmpty() || !person.getEmail().contains("@") || !person.getEmail().contains(".")) {
 
             throw new WebApplicationException("Please enter valid email", 400);
         }
@@ -88,16 +99,16 @@ public class PersonResource {
             throw new WebApplicationException("Email is already in use", 400);
         }
 
-        if (person.getStreet() == null || person.getStreet().isEmpty() || person.getStreet().contains("[0-9]+") || person.getStreet().length() < 3) {
+        if (person.getStreet() == null || person.getStreet().isEmpty() || person.getStreet().matches(".*\\d+.*") || person.getStreet().length() < 3) {
 
             throw new WebApplicationException("Street must only contain letters, and be at least 3 characters", 400);
         }
 
-        if (person.getAddInfo() == null || person.getAddInfo().isEmpty()) {
+        if (person.getAddInfo() == null || person.getAddInfo().isEmpty() || !person.getAddInfo().matches(".*\\d+.*")) {
 
             throw new WebApplicationException("Housenumber must be included", 400);
         }
-        if (person.getCity() == null || person.getCity().isEmpty() || person.getCity().contains("[0-9]+") || person.getCity().length() < 3) {
+        if (person.getCity() == null || person.getCity().isEmpty() || person.getCity().matches(".*\\d+.*") || person.getCity().length() < 3) {
 
             throw new WebApplicationException("City must be at least 3 characters", 400);
         }
@@ -146,37 +157,48 @@ public class PersonResource {
 
             throw new WebApplicationException("Id not passed correctly", 400);
         }
-        if (person.getFirstname() == null || person.getFirstname().isEmpty() || person.getFirstname().contains("[0-9]+") || person.getFirstname().length() < 2) {
+        if (person.getFirstname() == null || person.getFirstname().isEmpty() || person.getFirstname().length() < 2) {
 
             throw new WebApplicationException("Firstname must be 2 characters", 400);
         }
+        
+        if (person.getFirstname().matches(".*\\d+.*")) {
 
-        if (person.getLastname() == null || person.getLastname().isEmpty() || person.getLastname().contains("[0-9]+") || person.getLastname().length() < 2) {
+            throw new WebApplicationException("Firstname must not contain digits", 400);
+        }
+
+        if (person.getLastname() == null || person.getLastname().isEmpty() || person.getLastname().length() < 2) {
 
             throw new WebApplicationException("Lastname must be 2 characters", 400);
         }
-        if (person.getEmail() == null || person.getEmail().isEmpty() || !person.getEmail().contains("@") && !person.getEmail().contains(".")) {
+        
+        if (person.getLastname().matches(".*\\d+.*")) {
+
+            throw new WebApplicationException("Lastname must not contain digits", 400);
+        }
+        
+        if (person.getEmail() == null || person.getEmail().isEmpty() || !person.getEmail().contains("@") || !person.getEmail().contains(".")) {
 
             throw new WebApplicationException("Please enter valid email", 400);
         }
 
         List<PersonDTO> persons = FACADE.getPersonByEmail(person.getEmail());
 
-        if (persons.size() > 0 && id != persons.get(0).getId()) {
+        if (persons.size() > 0) {
 
             throw new WebApplicationException("Email is already in use", 400);
         }
 
-        if (person.getStreet() == null || person.getStreet().isEmpty() || person.getStreet().contains("[0-9]+") || person.getStreet().length() < 3) {
+        if (person.getStreet() == null || person.getStreet().isEmpty() || person.getStreet().matches(".*\\d+.*") || person.getStreet().length() < 3) {
 
             throw new WebApplicationException("Street must only contain letters, and be at least 3 characters", 400);
         }
 
-        if (person.getAddInfo() == null || person.getAddInfo().isEmpty()) {
+        if (person.getAddInfo() == null || person.getAddInfo().isEmpty() || !person.getAddInfo().matches(".*\\d+.*")) {
 
             throw new WebApplicationException("Housenumber must be included", 400);
         }
-        if (person.getCity() == null || person.getCity().isEmpty() || person.getCity().contains("[0-9]+") || person.getCity().length() < 3) {
+        if (person.getCity() == null || person.getCity().isEmpty() || person.getCity().matches(".*\\d+.*") || person.getCity().length() < 3) {
 
             throw new WebApplicationException("City must be at least 3 characters", 400);
         }
