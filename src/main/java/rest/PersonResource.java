@@ -248,7 +248,7 @@ public class PersonResource {
         }
 
         FACADE.deletePerson(id);
-
+        
         return "{\"status\": \"Person has been deleted\"}";
     }
 
